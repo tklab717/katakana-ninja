@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="カタカナ忍者">
+<meta name="theme-color" content="#f6efe1">
+<title>カタカナ忍者 v0.1.1</title>
+<style>
+:root{
+  --paper:#f6efe1; --paper2:#efe4cc; --ink:#2b2a4c; --indigo:#34397f; --indigo2:#4b51a8;
+  --red:#cf3d36; --gold:#e8b931; --green:#2f9e63; --card:#fffdf7; --line:#d9ccb0;
+  --font:"Hiragino Maru Gothic ProN","Hiragino Maru Gothic Pro","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);font-family:var(--font);
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;overflow:hidden;overscroll-behavior:none}
+body{background:
+  radial-gradient(circle at 12% 18%, rgba(255,255,255,.55) 0 18%, transparent 19%),
+  radial-gradient(circle at 88% 82%, rgba(232,185,49,.12) 0 22%, transparent 23%),
+  var(--paper)}
+button{font-family:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation}
+#app{position:fixed;inset:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;
+  padding:calc(env(safe-area-inset-top) + 16px) calc(env(safe-area-inset-right) + 16px) calc(env(safe-area-inset-bottom) + 20px) calc(env(safe-area-inset-left) + 16px)}
+.screen.active{display:flex}
+
+/* ---------- home ---------- */
+#home{justify-content:center;gap:min(4vh,36px)}
+#pcorner{position:absolute;top:env(safe-area-inset-top);right:env(safe-area-inset-right);width:72px;height:72px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;opacity:.28}
+#pcorner .ring{position:absolute;inset:14px;border-radius:50%;border:3px solid var(--indigo);clip-path:inset(0 100% 0 0);transition:none}
+#pcorner.hold .ring{clip-path:inset(0 0 0 0);transition:clip-path 1.2s linear}
+.brand{display:flex;flex-direction:column;align-items:center;gap:8px}
+.ninja{width:min(42vmin,300px);height:min(42vmin,300px);border-radius:50%;background:var(--card);
+  display:flex;align-items:center;justify-content:center;font-size:min(26vmin,190px);
+  box-shadow:0 10px 0 var(--line), inset 0 0 0 8px var(--paper2)}
+.ninja.sleep{filter:saturate(.6)}
+.brand h1{margin:6px 0 0;font-size:min(8vmin,56px);letter-spacing:.08em;color:var(--indigo)}
+.brand h1 small{display:block;text-align:center;font-size:.4em;letter-spacing:.3em;color:#8a7f66;margin-top:4px}
+#homeStamps{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:min(90vw,640px);min-height:40px}
+.mini-hanko{width:34px;height:34px;border-radius:50%;border:3px solid var(--red);color:var(--red);font-size:16px;
+  display:flex;align-items:center;justify-content:center;font-weight:700;transform:rotate(-8deg);background:rgba(255,255,255,.5)}
+.big{font-size:min(8vmin,52px);font-weight:700;padding:.45em 1.3em;border-radius:999px;background:var(--red);color:#fff;
+  box-shadow:0 8px 0 #8f2622;letter-spacing:.1em}
+.big:active{transform:translateY(6px);box-shadow:0 2px 0 #8f2622}
+.big.blue{background:var(--indigo);box-shadow:0 8px 0 #1f2353}
+.big.blue:active{box-shadow:0 2px 0 #1f2353}
+#doneMsg{font-size:min(6vmin,40px);text-align:center;line-height:1.6;color:var(--indigo)}
+
+/* ---------- play ---------- */
+#play{justify-content:space-between}
+.bar{width:100%;display:flex;align-items:center;justify-content:space-between;min-height:64px}
+#dots{display:flex;gap:8px;flex-wrap:wrap;max-width:80%}
+.dot{width:22px;height:22px;border-radius:50%;border:3px solid var(--line);background:transparent;transition:.3s}
+.dot.ok{background:var(--gold);border-color:#c49a1c}
+.dot.done{background:#c9bfa8;border-color:#b1a68c}
+.dot.now{border-color:var(--indigo);transform:scale(1.25)}
+.icon{width:64px;height:64px;border-radius:50%;background:var(--card);font-size:30px;box-shadow:0 5px 0 var(--line)}
+.icon:active{transform:translateY(4px);box-shadow:0 1px 0 var(--line)}
+#stage{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh;min-height:0}
+.pic{font-size:min(34vmin,250px);line-height:1.1;filter:drop-shadow(0 8px 0 rgba(0,0,0,.08));animation:popin .45s ease-out}
+.bigword{font-size:min(17vmin,150px);font-weight:700;letter-spacing:.06em;background:var(--card);padding:.15em .5em;border-radius:24px;
+  box-shadow:0 8px 0 var(--line);animation:popin .45s ease-out}
+.introword{display:flex;gap:10px}
+.introword.sm span{font-size:min(11vmin,96px)}
+.introword span{font-size:min(16vmin,140px);font-weight:700;background:var(--card);border-radius:20px;padding:.05em .18em;
+  box-shadow:0 7px 0 var(--line);transition:transform .2s, background .2s, color .2s}
+.answers{width:100%;display:flex;justify-content:center;align-items:center;gap:min(3vmin,24px);padding-bottom:1vh;min-height:30vh}
+.answers.lv1{flex-direction:column}
+.card{background:var(--card);border-radius:24px;border:4px solid transparent;box-shadow:0 8px 0 var(--line);
+  transition:transform .12s, background .2s, border-color .2s, opacity .2s;pointer-events:none}
+body.can-tap .card{pointer-events:auto}
+.card:active{transform:translateY(6px);box-shadow:0 2px 0 var(--line)}
+.wcard{font-size:min(10vmin,80px);font-weight:700;letter-spacing:.06em;padding:.12em .7em;min-width:min(62vw,440px)}
+.tile{width:min(24vmin,190px);height:min(24vmin,190px);font-size:min(17vmin,130px);font-weight:700;display:flex;align-items:center;justify-content:center}
+.pcard{width:min(27vmin,210px);height:min(27vmin,210px);font-size:min(18vmin,140px);display:flex;align-items:center;justify-content:center}
+.lit{background:#fff1b8 !important;color:var(--red);transform:scale(1.12)}
+.good{background:#dcf3e5 !important;border-color:var(--green) !important;animation:pop .5s ease-out}
+.bad{animation:shake .45s;opacity:.45}
+.hint{border-color:var(--gold) !important;animation:glow 1s ease-in-out infinite}
+.continue{margin-top:2vh}
+.burst{position:fixed;font-size:34px;pointer-events:none;z-index:50;animation:fly .8s ease-out forwards}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes popin{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+@keyframes glow{0%,100%{box-shadow:0 8px 0 var(--line),0 0 0 0 rgba(232,185,49,.0)}50%{box-shadow:0 8px 0 var(--line),0 0 0 14px rgba(232,185,49,.45)}}
+@keyframes fly{0%{transform:translate(0,0) scale(.6);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1.2);opacity:0}}
+
+/* ---------- reward ---------- */
+#reward{justify-content:center;gap:3vh}
+.scroll{background:var(--card);border-radius:28px;padding:4vh 6vw;box-shadow:0 10px 0 var(--line);display:flex;flex-direction:column;align-items:center;gap:2vh}
+.hanko{width:min(40vmin,260px);height:min(40vmin,260px);border-radius:50%;border:12px solid var(--red);color:var(--red);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;transform:rotate(-10deg) scale(3);opacity:0;
+  background:radial-gradient(circle, rgba(207,61,54,.06), rgba(207,61,54,.02))}
+.hanko b{font-size:min(16vmin,110px);line-height:1}
+.hanko span{font-size:min(5vmin,32px);margin-top:4px}
+.hanko.stamped{animation:stamp .55s cubic-bezier(.2,.9,.3,1.2) forwards}
+@keyframes stamp{0%{transform:rotate(-10deg) scale(3);opacity:0}70%{transform:rotate(-10deg) scale(.92);opacity:1}100%{transform:rotate(-10deg) scale(1);opacity:1}}
+#rwText{font-size:min(6vmin,40px);font-weight:700;color:var(--indigo);text-align:center}
+#rwUps{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.up{background:#fff6d6;border:4px solid var(--gold);border-radius:18px;padding:6px 14px;text-align:center;animation:popin .5s ease-out both}
+.up b{display:block;font-size:min(11vmin,80px)}
+.up small{font-size:min(4vmin,24px);color:#a17a0b}
+
+/* ---------- overlay / parent ---------- */
+#gate{position:fixed;inset:0;background:rgba(30,30,50,.55);display:none;align-items:center;justify-content:center;z-index:100}
+#gate.show{display:flex}
+.gatebox{background:#fff;border-radius:20px;padding:22px;width:min(92vw,380px);text-align:center;font-family:var(--font)}
+.gatebox p{margin:0 0 8px;font-size:15px;color:#555}
+#gq{font-size:34px;font-weight:700;margin:6px 0}
+#ga{font-size:30px;height:44px;border-bottom:2px solid #ccc;margin:0 auto 12px;width:120px}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.keys button{font-size:24px;padding:12px 0;border-radius:12px;background:#f1f1f5}
+.keys button:active{background:#dcdcf0}
+#parent{align-items:stretch;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#fbf8f1;-webkit-user-select:text;user-select:text;font-size:15px;color:#2b2a35}
+#parent .wrap{max-width:760px;width:100%;margin:0 auto;padding-bottom:40px}
+#parent h2{font-size:22px;margin:4px 0 4px;color:var(--indigo)}
+#parent h3{font-size:16px;margin:22px 0 8px;border-left:5px solid var(--indigo);padding-left:8px}
+#parent .meta{color:#6b6880;font-size:13px}
+#parent table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden}
+#parent th,#parent td{padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-size:14px}
+#parent th{background:#f0eef8;font-weight:700;font-size:13px}
+#parent td.k{font-size:22px;font-weight:700}
+#parent .row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;padding:10px 12px;border-bottom:1px solid #eee}
+#parent .row:first-of-type{border-radius:12px 12px 0 0}
+#parent select{font-size:15px;padding:4px 6px}
+#parent .btns{display:flex;flex-wrap:wrap;gap:8px}
+#parent .pbtn{background:var(--indigo);color:#fff;border-radius:10px;padding:10px 14px;font-size:14px}
+#parent .pbtn.sub{background:#e7e5f2;color:var(--indigo)}
+#parent .pbtn.warn{background:#fbe3e1;color:#a3221c}
+#parent .note{font-size:13px;color:#6b6880;margin:6px 0 0;line-height:1.6}
+#parent textarea{width:100%;height:120px;font-size:11px}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;background:#eee}
+.pill.l1{background:#fde7e5}.pill.l2{background:#fff1c9}.pill.l3{background:#e1f0ff}.pill.l4{background:#d9f3e4}.pill.l0{background:#eee;color:#999}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ホーム -->
+  <section id="home" class="screen active">
+    <div id="pcorner" aria-label="保護者メニュー（長押し）"><div class="ring"></div>⚙︎</div>
+    <div class="brand">
+      <div class="ninja" id="homeNinja">🥷</div>
+      <h1>カタカナ にんじゃ<small>v0.1.1</small></h1>
+    </div>
+    <div id="homeStamps"></div>
+    <button id="startBtn" class="big">▶ しゅぎょう</button>
+    <div id="doneMsg" hidden>きょうの しゅぎょうは おしまい<br>また あした！</div>
+  </section>
+
+  <!-- 出題 -->
+  <section id="play" class="screen">
+    <header class="bar"><div id="dots"></div><button id="replay" class="icon" aria-label="もういちど きく">🔊</button></header>
+    <main id="stage"></main>
+    <footer id="answers" class="answers"></footer>
+  </section>
+
+  <!-- ごほうび -->
+  <section id="reward" class="screen">
+    <div class="scroll">
+      <div class="hanko" id="hanko"><b>忍</b><span id="hankoDay"></span></div>
+      <div id="rwText"></div>
+      <div id="rwUps"></div>
+    </div>
+    <button id="rwDone" class="big blue" hidden>おわり</button>
+  </section>
+
+  <!-- 保護者 -->
+  <section id="parent" class="screen"><div class="wrap" id="pwrap"></div></section>
+</div>
+
+<!-- 保護者ゲート -->
+<div id="gate">
+  <div class="gatebox">
+    <p>保護者の方へ：答えを入力してください</p>
+    <div id="gq"></div>
+    <div id="ga"></div>
+    <div class="keys" id="gkeys"></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* =========================================================
+   カタカナ忍者 v0.1.1
+   v0.1.1：Lv1を常に3択（似た語＋にせもの語）、Lv2に別の字を混ぜる、合格判定を1日3問以上に
+   範囲：ステージ1「よめるかな」Lv1〜3 ／ 一の巻（5語・13字）
+   ========================================================= */
+
+// ---- コンテンツ（一の巻）。出す順番 = 1日1語（新しい字は最大3字/日）
+const WORDS = [
+  {w:'トマト', e:'🍅'},  // ト マ
+  {w:'メロン', e:'🍈'},  // メ ロ ン
+  {w:'ミルク', e:'🥛'},  // ミ ル ク
+  {w:'アイス', e:'🍦'},  // ア イ ス
+  {w:'カメラ', e:'📷'},  // カ ラ（メは既習）
+];
+const KEY = 'katakana-ninja-v01';
+const ALL_CHARS = [...new Set(WORDS.map(w => w.w).join(''))];
+const MAX_LV = 3;           // 読みのレベル上限。4 = 「よめた」
+const PASS_RATE = 0.8;      // 1日の正答率の合格ライン
+const MIN_TRIES = 3;        // 合格判定に必要な1日の出題数（3問×8割＝実質全問正解。当てずっぽうで通る確率を下げる）
+const LOW_RATE = 0.6;       // 前回これ未満なら新しい語を出さない
+const LV_NAME = ['', 'Lv1 えあわせ', 'Lv2 もじひろい', 'Lv3 よんでえらぶ', 'よめた'];
+const PRAISE = ['せいかい！', 'すごい！', 'やったね！', 'にんにん！', 'おみごと！'];
+const TEST = /[?&]test=1/.test(location.search);   // 自動テスト用（音声を待たない）
+
+// ---- 状態
+function defaultState(){
+  return {v:1, words:[], lastIntro:null, forceNew:false, extraPlay:null,
+    chars:{}, sessions:[], playDays:[],
+    settings:{passDays:2, rate:0.9, autoNew:true, voice:'', dayOffset:0}};
+}
+let S = load();
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){ const s = JSON.parse(raw); const d = defaultState(); s.settings = Object.assign(d.settings, s.settings||{}); return Object.assign(d, s); }
+  }catch(e){}
+  return defaultState();
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+// ---- 日付（端末のローカル日付。テスト用にずらせる）
+function fmt(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function today(){ return fmt(new Date(Date.now() + (S.settings.dayOffset||0)*864e5)); }
+function addDays(str, n){ const [y,m,d] = str.split('-').map(Number); return fmt(new Date(y, m-1, d+n)); }
+
+// ---- 小道具
+const $ = s => document.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, TEST ? 5 : ms));
+const pick = a => a[Math.floor(Math.random()*a.length)];
+function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const uniq = s => [...new Set([...s])];
+const toHira = s => s.replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0)-0x60));
+function el(tag, cls, text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+function show(id){ document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id===id)); }
+
+// =========================================================
+// 音（読み上げ・効果音）
+// =========================================================
+let jaVoices = [];
+function loadVoices(){ try{ jaVoices = speechSynthesis.getVoices().filter(v => /^ja/i.test(v.lang)); }catch(e){} }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+function pickVoice(){
+  if(S.settings.voice){ const v = jaVoices.find(v => v.name===S.settings.voice); if(v) return v; }
+  for(const p of ['Kyoko','O-ren','Otoya','Hattori']){ const v = jaVoices.find(v => v.name.includes(p)); if(v) return v; }
+  return jaVoices[0] || null;
+}
+let speechGen = 0;
+function stopSpeech(){ speechGen++; try{ if(speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); }catch(e){} }
+function speak(text){
+  return new Promise(res => {
+    if(TEST || !('speechSynthesis' in window)){ setTimeout(res, TEST ? 1 : 300); return; }
+    const gen = ++speechGen;
+    let done = false, tm;
+    const fin = () => { if(done) return; done = true; clearTimeout(tm); setTimeout(res, 120); };
+    try{
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'ja-JP'; const v = pickVoice(); if(v) u.voice = v;
+      u.rate = S.settings.rate; u.pitch = 1.1;
+      u.onend = fin; u.onerror = fin;
+      tm = setTimeout(fin, 1800 + text.length * 420 / u.rate);   // onend が来ない端末への保険
+      const go = () => { if(gen === speechGen) speechSynthesis.speak(u); else fin(); };
+      if(speechSynthesis.speaking || speechSynthesis.pending){ speechSynthesis.cancel(); setTimeout(go, 60); } else go();
+    }catch(e){ fin(); }
+  });
+}
+function unlockSpeech(){ // iOS：最初のタップの中で一度だけ空発話
+  try{ const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); }catch(e){}
+}
+let ac = null;
+function unlockAudio(){ try{ ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if(ac.state === 'suspended') ac.resume(); }catch(e){} }
+function tone(freq, at, dur, type='sine', gain=.16){
+  if(!ac) return;
+  try{
+    const t = ac.currentTime + at, o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gain, t+.02); g.gain.exponentialRampToValueAtTime(.001, t+dur);
+    o.connect(g).connect(ac.destination); o.start(t); o.stop(t+dur+.05);
+  }catch(e){}
+}
+const sfxGood  = () => { tone(784,0,.18); tone(1047,.1,.22); tone(1568,.2,.35,'triangle',.1); };
+const sfxTry   = () => { tone(392,0,.18,'triangle',.12); tone(330,.12,.25,'triangle',.1); };
+const sfxStamp = () => { tone(110,0,.25,'square',.12); tone(70,.02,.3,'sine',.25); };
+const sfxPop   = () => { tone(660,0,.08,'triangle',.08); };
+
+// =========================================================
+// 学習記録と進級
+// =========================================================
+function newChar(){ return {lv:1, pass:0, passDates:[], day:null, total:{c:0,t:0}, interval:0, due:null}; }
+function acc(ch){ const t = S.chars[ch].total; return t.t ? t.c/t.t : 0; }
+
+// 1問ぶんの記録。q.lv と同じレベルにいる字だけを数える
+function record(chars, lv, ok){
+  const t = today();
+  for(const ch of chars){
+    const r = S.chars[ch]; if(!r) continue;
+    if(r.lv > MAX_LV){                 // 「よめた」字は間隔反復で復習
+      r.total.t++; if(ok) r.total.c++;
+      r.interval = ok ? Math.min((r.interval||1)*2, 16) : 1;
+      r.due = addDays(t, r.interval);
+      continue;
+    }
+    if(r.lv !== lv) continue;
+    if(!r.day || r.day.date !== t || r.day.lv !== r.lv) r.day = {date:t, lv:r.lv, c:0, t:0};
+    r.day.t++; if(ok) r.day.c++;
+    r.total.t++; if(ok) r.total.c++;
+  }
+}
+// 1日の成績で「合格日」を数え、必要日数に達したら進級
+function evaluate(ch, ups){
+  const r = S.chars[ch], d = r.day;
+  if(!d || d.lv !== r.lv || r.lv > MAX_LV) return;
+  if(r.passDates.includes(d.date)) return;               // 同じ日に2回は数えない
+  if(d.t >= MIN_TRIES && d.c/d.t >= PASS_RATE){
+    r.passDates.push(d.date); r.pass++;
+    if(r.pass >= S.settings.passDays){
+      r.lv++; r.pass = 0;
+      if(r.lv > MAX_LV){ r.interval = 1; r.due = addDays(d.date, 1); }
+      ups && ups.push({ch, lv:r.lv});
+    }
+  }
+}
+function evaluateAll(ups){ Object.keys(S.chars).forEach(ch => evaluate(ch, ups)); }
+
+function nextWord(){ return WORDS.find(w => !S.words.includes(w.w)) || null; }
+function newWordReason(){
+  const nw = nextWord();
+  if(!nw) return [false, '一の巻の5語はすべて導入済み'];
+  if(S.forceNew) return [true, '保護者が「次回出す」を指定'];
+  if(!S.settings.autoNew) return [false, '自動で出す設定がオフ'];
+  if(S.lastIntro === today()) return [false, '今日はもう新しい語を出した'];
+  const last = S.sessions[S.sessions.length-1];
+  if(last && last.n > 0 && last.ok/last.n < LOW_RATE) return [false, `前回の正答率が${Math.round(LOW_RATE*100)}%未満なので復習に専念`];
+  return [true, '通常どおり1語'];
+}
+function introduceWord(w){
+  S.words.push(w.w); S.lastIntro = today(); S.forceNew = false;
+  for(const ch of uniq(w.w)) if(!S.chars[ch]) S.chars[ch] = newChar();
+  save();
+}
+
+// ---- 出題の選び方
+function wordsWith(ch){ return WORDS.filter(w => S.words.includes(w.w) && w.w.includes(ch)); }
+function reviewPool(){
+  const t = today();
+  return Object.keys(S.chars).filter(ch => { const r = S.chars[ch]; return r.lv <= MAX_LV || !r.due || r.due <= t; });
+}
+function pickReviewTarget(sess){
+  let pool = reviewPool(); if(!pool.length) pool = Object.keys(S.chars);
+  if(!pool.length) return null;
+  if(sess.asked === 0){   // 1問目は得意な字で「正解から入る」
+    const known = pool.filter(ch => S.chars[ch].total.t > 0).sort((a,b) => acc(b) - acc(a));
+    if(known.length) return known[0];
+  }
+  // 進級判定には1日 MIN_TRIES 問以上が必要 → 出し始めた字は、間に1問はさんで規定数まで出す
+  const pair = pool.filter(ch => triesToday(ch) > 0 && triesToday(ch) < MIN_TRIES && S.chars[ch].lv <= MAX_LV && ch !== sess.lastTarget);
+  if(pair.length) return pick(pair);
+  // 新しく選ぶ字は「最後に重点練習した日が古い順」→「レベルが低い順」で公平に回す
+  const fresh = pool.filter(ch => !sess.tcnt[ch]);
+  const base = fresh.length ? fresh : pool;
+  return shuffle(base).sort((a,b) => (S.chars[a].lastT||'').localeCompare(S.chars[b].lastT||'') || S.chars[a].lv - S.chars[b].lv)[0];
+}
+function triesToday(ch){ const r = S.chars[ch], d = r.day; return d && d.date === today() && d.lv === r.lv ? d.t : 0; }
+function pickNewTarget(word, sess){
+  return shuffle(uniq(word.w)).sort((a,b) => (sess.cnt[a]||0) - (sess.cnt[b]||0))[0];
+}
+function makeQ(ch, sess, forced){
+  const lv = Math.min(S.chars[ch].lv, MAX_LV);
+  let word = forced;
+  if(!word){
+    // 同じレベルの字が多い語を優先（Lv1/Lv3は語の中の同レベルの字すべてが1問ぶん記録される）
+    const cands = wordsWith(ch);
+    const fresh = cands.filter(w => w.w !== sess.lastWord);
+    const same = w => uniq(w.w).filter(c => S.chars[c] && Math.min(S.chars[c].lv, MAX_LV) === lv).length;
+    word = shuffle(fresh.length ? fresh : cands).sort((a,b) => same(b) - same(a))[0];
+  }
+  const others = shuffle(WORDS.filter(w => w.w !== word.w));
+  const q = {lv, ch, word};
+  if(lv === 1){
+    // 3択：①共通の字が多い本物の語 ②1字だけ違う「にせもの」語（先頭以外を変える＝語全体を見ないと選べない）
+    const share = w => uniq(w.w).filter(c => word.w.includes(c)).length;
+    const real = others.slice().sort((a,b) => share(b) - share(a))[0];
+    q.choices = shuffle([word, real, makeDecoy(word)]);
+  }
+  if(lv === 2){
+    // その語の字（重複なし）＋その語にない字を1枚。同じ字が2つあっても正解は1枚だけ
+    const own = uniq(word.w);
+    const learned = Object.keys(S.chars).filter(c => !own.includes(c));
+    const all = ALL_CHARS.filter(c => !own.includes(c));
+    const extra = shuffle(learned.length ? learned : all).slice(0, 1);
+    q.tiles = shuffle([...own, ...extra]);
+  }
+  if(lv === 3) q.choices = shuffle([word, ...others.slice(0, 2)]);
+  q.credit = lv === 2 ? [ch] : uniq(word.w);
+  return q;
+}
+// 1字だけ差し替えた実在しない語（例：トマト→トメト）
+function makeDecoy(word){
+  const chars = [...word.w], real = new Set(WORDS.map(w => w.w));
+  const learned = Object.keys(S.chars);
+  for(let k=0;k<30;k++){
+    const pos = 1 + Math.floor(Math.random()*(chars.length-1));
+    const src = (k < 15 && learned.length > 1) ? learned : ALL_CHARS;
+    const c = pick(src.filter(x => x !== chars[pos]));
+    const d = chars.slice(); d[pos] = c; const w = d.join('');
+    if(w !== word.w && !real.has(w)) return {w, e:'', decoy:true};
+  }
+  const d = chars.slice(); d[1] = ALL_CHARS.find(x => x !== chars[1]); return {w:d.join(''), e:'', decoy:true};
+}
+function isCorrect(q, i){ return q.lv === 2 ? q.tiles[i] === q.ch : q.choices[i].w === q.word.w; }
+function correctIdx(q){
+  if(q.lv === 2) return [q.tiles.indexOf(q.ch)];
+  return [q.choices.findIndex(w => w.w === q.word.w)];
+}
+
+// =========================================================
+// 画面：出題
+// =========================================================
+let tapResolver = null, curQ = null;
+function waitTap(){ return new Promise(r => { tapResolver = r; document.body.classList.add('can-tap'); }); }
+function onChoice(i){
+  if(!tapResolver) return;
+  const r = tapResolver; tapResolver = null;
+  document.body.classList.remove('can-tap');
+  stopSpeech(); r(i);
+}
+function renderQ(q){
+  const stage = $('#stage'), ans = $('#answers');
+  stage.innerHTML = ''; ans.innerHTML = ''; ans.className = 'answers lv' + q.lv;
+  $('#replay').style.visibility = 'visible';
+  if(q.lv === 1){
+    stage.append(el('div', 'pic', q.word.e));
+    q.choices.forEach((w,i) => { const b = el('button', 'card wcard', w.w); b.onclick = () => onChoice(i); ans.append(b); });
+  } else if(q.lv === 2){
+    stage.append(el('div', 'pic', q.word.e));
+    const row = el('div', 'introword sm'); row.id = 'qword'; [...q.word.w].forEach(c => row.append(el('span', '', c))); stage.append(row);
+    q.tiles.forEach((c,i) => { const b = el('button', 'card tile', c); b.onclick = () => onChoice(i); ans.append(b); });
+  } else {
+    stage.append(el('div', 'bigword', q.word.w));
+    q.choices.forEach((w,i) => { const b = el('button', 'card pcard', w.e); b.onclick = () => onChoice(i); ans.append(b); });
+  }
+}
+async function promptQ(q){
+  if(q.lv === 1){ await speak(`${q.word.w}。 ${q.word.w}は どれかな？`); }
+  else if(q.lv === 2){
+    const row = $('#qword');
+    if(row) for(const s of [...row.children]){ s.classList.add('lit'); await speak(toHira(s.textContent)); s.classList.remove('lit'); }
+    await speak(`${toHira(q.ch)} は どれ？`);
+  } else {
+    await speak('じを よんで、 あう えを タッチしてね');   // 答えの音は出さない
+  }
+}
+function burst(target){
+  const r = target.getBoundingClientRect(), cx = r.left + r.width/2, cy = r.top + r.height/2;
+  for(let k=0;k<7;k++){
+    const s = el('span', 'burst', pick(['⭐','✨','🌟']));
+    const a = Math.PI*2*k/7 + Math.random()*.5, d = 90 + Math.random()*60;
+    s.style.left = (cx-17)+'px'; s.style.top = (cy-17)+'px';
+    s.style.setProperty('--dx', Math.cos(a)*d+'px'); s.style.setProperty('--dy', Math.sin(a)*d+'px');
+    document.body.append(s); setTimeout(() => s.remove(), 900);
+  }
+}
+async function celebrate(q, i){
+  const b = $('#answers').children[i];
+  b.classList.add('good'); sfxGood(); burst(b);
+  if(q.lv === 3) await speak(q.word.w);       // 自力で読めた後に音で答え合わせ
+  await speak(pick(PRAISE));
+  await sleep(300);
+}
+async function ask(q){
+  curQ = q;
+  renderQ(q); await sleep(350); await promptQ(q);
+  let i = await waitTap();
+  if(isCorrect(q, i)){ await celebrate(q, i); return true; }
+
+  // まちがい：「おしい！」→ 正解を光らせる → もう1回だけ
+  const btns = $('#answers').children;
+  btns[i].classList.add('bad'); sfxTry();
+  correctIdx(q).forEach(k => btns[k].classList.add('hint'));
+  await speak('おしい！ こたえは これ だよ');
+  await speak(q.lv === 2 ? toHira(q.ch) : q.word.w);
+  await sleep(700);
+  if(q.choices) q.choices = shuffle(q.choices);
+  if(q.tiles) q.tiles = shuffle(q.tiles);
+  renderQ(q); await sleep(300); await promptQ(q);
+  i = await waitTap();
+  if(isCorrect(q, i)){ await celebrate(q, i); }
+  else {
+    $('#answers').children[i].classList.add('bad');
+    correctIdx(q).forEach(k => $('#answers').children[k].classList.add('hint'));
+    await speak('これ だよ。 つぎ いこう！'); await sleep(500);
+  }
+  return false;   // 記録は「1回目で正解できたか」
+}
+async function intro(word){
+  curQ = null;
+  const stage = $('#stage'), ans = $('#answers');
+  stage.innerHTML = ''; ans.innerHTML = ''; ans.className = 'answers';
+  $('#replay').style.visibility = 'hidden';
+  stage.append(el('div', 'pic', word.e));
+  const row = el('div', 'introword'); [...word.w].forEach(c => row.append(el('span', '', c))); stage.append(row);
+  await sleep(400);
+  await speak('あたらしい ことば だよ！'); await speak(word.w);
+  const play = async () => {
+    for(const s of row.children){ s.classList.add('lit'); await speak(toHira(s.textContent)); s.classList.remove('lit'); }
+    await speak(word.w);
+  };
+  await play();
+  const next = el('button', 'big blue continue', 'わかった！');
+  ans.append(next);
+  $('#replay').style.visibility = 'visible';
+  await new Promise(r => {
+    $('#replay').onclick = () => { sfxPop(); play(); };
+    next.onclick = () => { stopSpeech(); r(); };
+  });
+  $('#replay').onclick = replayHandler;
+}
+function replayHandler(){ if(curQ && tapResolver){ sfxPop(); promptQ(curQ); } }
+
+// ---- 進み具合のドット
+function initDots(n){ const d = $('#dots'); d.innerHTML = ''; for(let i=0;i<n;i++) d.append(el('div','dot')); }
+function markDot(k, ok){ const ds = $('#dots').children; if(ds[k]){ ds[k].classList.remove('now'); ds[k].classList.add(ok ? 'ok' : 'done'); } if(ds[k+1]) ds[k+1].classList.add('now'); }
+
+// =========================================================
+// 1回の修行
+// =========================================================
+let running = false;
+async function runSession(){
+  if(running) return; running = true;
+  const t = today();
+  if(S.extraPlay === t) S.extraPlay = null;
+  evaluateAll(null);                                   // 途中でやめた日の分を締める
+  const sess = {date:t, start:Date.now(), asked:0, ok:0, cnt:{}, tcnt:{}, lastTarget:null, lastWord:null, newWord:null};
+  const [doNew] = newWordReason();
+  const nw = doNew ? nextWord() : null;
+  const reviewN = S.words.length ? Math.min(12, 2 + 2*S.words.length) : 0;
+  const newN = nw ? (reviewN ? 3 : 5) : 0;
+  initDots(reviewN + newN); if($('#dots').children[0]) $('#dots').children[0].classList.add('now');
+  show('play');
+
+  const runQ = async q => {
+    const ok = await ask(q);
+    record(q.credit, q.lv, ok);
+    uniq(q.word.w).forEach(c => sess.cnt[c] = (sess.cnt[c]||0) + 1);
+    sess.tcnt[q.ch] = (sess.tcnt[q.ch]||0) + 1; sess.lastTarget = q.ch; S.chars[q.ch].lastT = t;
+    sess.lastWord = q.word.w;
+    markDot(sess.asked, ok);
+    sess.asked++; if(ok) sess.ok++;
+    save();
+  };
+
+  // ① 復習（得意な字から）
+  for(let k=0;k<reviewN;k++){ const ch = pickReviewTarget(sess); if(!ch) break; await runQ(makeQ(ch, sess)); }
+  // ② 新しいことば（1日1語＝新しい字は最大3字）
+  if(nw){
+    introduceWord(nw); sess.newWord = nw.w;
+    await intro(nw);
+    for(let k=0;k<newN;k++) await runQ(makeQ(pickNewTarget(nw, sess), sess, nw));
+  }
+  // ③ ごほうび（必ずここで終わる）
+  const ups = []; evaluateAll(ups);
+  S.sessions.push({date:t, n:sess.asked, ok:sess.ok, sec:Math.round((Date.now()-sess.start)/1000), newWord:sess.newWord});
+  if(S.sessions.length > 200) S.sessions = S.sessions.slice(-200);
+  if(!S.playDays.includes(t)) S.playDays.push(t);
+  save();
+  running = false;
+  await reward(ups);
+}
+
+async function reward(ups){
+  show('reward');
+  const n = S.playDays.length;
+  const h = $('#hanko'); h.classList.remove('stamped'); void h.offsetWidth;
+  $('#hankoDay').textContent = n + 'にちめ';
+  $('#rwText').textContent = ''; $('#rwUps').innerHTML = ''; $('#rwDone').hidden = true;
+  await sleep(400);
+  h.classList.add('stamped'); setTimeout(sfxStamp, 380);
+  await sleep(700);
+  $('#rwText').textContent = 'しゅぎょう かんりょう！';
+  await speak(`しゅぎょう かんりょう！ ${n}にちめの はんこ だよ`);
+  if(ups.length){
+    ups.forEach((u,i) => {
+      const d = el('div', 'up'); d.style.animationDelay = (i*.15)+'s';
+      d.append(el('b', '', u.ch), el('small', '', u.lv > MAX_LV ? '🏅 よめた！' : '★'.repeat(u.lv) + ' レベルアップ'));
+      $('#rwUps').append(d);
+    });
+    sfxGood();
+    await speak(ups.map(u => toHira(u.ch)).join('、 ') + ' が レベルアップ！');
+  }
+  $('#rwDone').hidden = false;
+}
+
+// =========================================================
+// ホーム
+// =========================================================
+function canPlayToday(){ const t = today(); return !S.playDays.includes(t) || S.extraPlay === t; }
+function renderHome(){
+  const st = $('#homeStamps'); st.innerHTML = '';
+  S.playDays.slice(-30).forEach(() => st.append(el('div', 'mini-hanko', '忍')));
+  const ok = canPlayToday();
+  $('#startBtn').hidden = !ok; $('#doneMsg').hidden = ok;
+  $('#homeNinja').textContent = ok ? '🥷' : '😴';
+  $('#homeNinja').classList.toggle('sleep', !ok);
+  show('home');
+}
+$('#startBtn').onclick = () => { unlockSpeech(); unlockAudio(); sfxPop(); runSession(); };
+$('#homeNinja').onclick = () => { unlockAudio(); sfxPop(); speak(canPlayToday() ? 'にんにん！ しゅぎょう しよう！' : 'また あした ね！'); };
+$('#rwDone').onclick = () => { stopSpeech(); renderHome(); };
+$('#replay').onclick = replayHandler;
+
+// =========================================================
+// 保護者メニュー（長押し → 計算 → 設定・記録）
+// =========================================================
+(() => {
+  const c = $('#pcorner'); let tm = null;
+  const cancel = () => { clearTimeout(tm); tm = null; c.classList.remove('hold'); };
+  c.addEventListener('pointerdown', e => { e.preventDefault(); c.classList.add('hold'); tm = setTimeout(() => { cancel(); openGate(); }, 1200); });
+  ['pointerup','pointerleave','pointercancel'].forEach(ev => c.addEventListener(ev, cancel));
+})();
+let gateAns = 0, gateIn = '';
+function openGate(){
+  const a = 4 + Math.floor(Math.random()*6), b = 3 + Math.floor(Math.random()*7);
+  gateAns = a + b; gateIn = '';
+  $('#gq').textContent = `${a} ＋ ${b} ＝ ？`; $('#ga').textContent = '';
+  $('#gate').classList.add('show');
+}
+(() => {
+  const k = $('#gkeys');
+  ['1','2','3','4','5','6','7','8','9','×','0','OK'].forEach(x => {
+    const b = el('button', '', x); k.append(b);
+    b.onclick = () => {
+      if(x === '×'){ $('#gate').classList.remove('show'); return; }
+      if(x === 'OK'){
+        if(Number(gateIn) === gateAns){ $('#gate').classList.remove('show'); openParent(); }
+        else { gateIn = ''; $('#ga').textContent = ''; }
+        return;
+      }
+      if(gateIn.length < 3){ gateIn += x; $('#ga').textContent = gateIn; }
+    };
+  });
+})();
+
+function openParent(){ renderParent(); show('parent'); $('#parent').scrollTop = 0; }
+function pct(c, t){ return t ? Math.round(c/t*100) + '%' : '—'; }
+function renderParent(){
+  const t = today(), w = $('#pwrap');
+  const allChars = uniq(WORDS.map(x => x.w).join(''));
+  const [nNew, why] = newWordReason();
+  const tot = S.sessions.reduce((a,s) => ({n:a.n+s.n, ok:a.ok+s.ok}), {n:0, ok:0});
+  const voiceOpts = ['<option value="">自動（Kyoko等）</option>'].concat(jaVoices.map(v => `<option ${v.name===S.settings.voice?'selected':''}>${v.name}</option>`)).join('');
+  const sel = (id, vals, cur, lab) => `<select id="${id}">${vals.map((v,i) => `<option value="${v}" ${String(v)===String(cur)?'selected':''}>${lab[i]}</option>`).join('')}</select>`;
+
+  const charRows = allChars.map(ch => {
+    const r = S.chars[ch];
+    if(!r) return `<tr><td class="k" style="color:#bbb">${ch}</td><td><span class="pill l0">未導入</span></td><td>—</td><td>—</td><td>—</td></tr>`;
+    const lv = Math.min(r.lv, 4);
+    const td = r.day && r.day.date === t ? `${r.day.c}/${r.day.t}` : '—';
+    const pass = r.lv > MAX_LV ? `次の復習 ${r.due ? r.due.slice(5) : '—'}` : `${r.pass}/${S.settings.passDays}日`;
+    return `<tr><td class="k">${ch}</td><td><span class="pill l${lv}">${LV_NAME[lv]}</span></td><td>${pass}</td><td>${td}</td><td>${pct(r.total.c, r.total.t)}（${r.total.t}問）</td></tr>`;
+  }).join('');
+  const sessRows = S.sessions.slice(-10).reverse().map(s =>
+    `<tr><td>${s.date.slice(5)}</td><td>${s.n}</td><td>${pct(s.ok, s.n)}</td><td>${Math.floor(s.sec/60)}分${s.sec%60}秒</td><td>${s.newWord||'—'}</td></tr>`).join('')
+    || '<tr><td colspan="5" style="color:#999">まだ記録がありません</td></tr>';
+
+  w.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2>保護者メニュー</h2><button class="pbtn" id="pClose">閉じる</button>
+    </div>
+    <div class="meta">今日：${t}${S.settings.dayOffset ? `（テスト用に ${S.settings.dayOffset > 0 ? '+' : ''}${S.settings.dayOffset}日ずらし中）` : ''} ／ 合計 ${S.playDays.length}日 ／ 1回目正答率 ${pct(tot.ok, tot.n)}</div>
+
+    <h3>次回の修行</h3>
+    <div class="row"><span>導入済みのことば</span><b>${S.words.length}/${WORDS.length}　${S.words.join('・') || '—'}</b></div>
+    <div class="row"><span>新しいことば</span><b>${nNew ? 'あり：' + nextWord().w : 'なし'}</b></div>
+    <p class="note">理由：${why}</p>
+
+    <h3>字ごとの進み具合（一の巻 13字）</h3>
+    <table><tr><th>字</th><th>いまのレベル</th><th>進級まで</th><th>今日</th><th>通算</th></tr>${charRows}</table>
+    <p class="note">進級条件：その日の出題が${MIN_TRIES}問以上・正答率${PASS_RATE*100}%以上の日が、設定の日数たまったら次のレベルへ。「よめた」字は間隔をあけて（1→2→4→8日…）復習に出ます。</p>
+
+    <h3>最近の記録</h3>
+    <table><tr><th>日付</th><th>問題数</th><th>1回目正答</th><th>時間</th><th>新しいことば</th></tr>${sessRows}</table>
+
+    <h3>設定</h3>
+    <div class="row"><span>進級に必要な合格日数</span>${sel('sPass', [1,2,3], S.settings.passDays, ['1日（速い）','2日（v0.1推奨）','3日（企画書どおり）'])}</div>
+    <div class="row"><span>読み上げの速さ</span>${sel('sRate', [0.7,0.8,0.9,1.0], S.settings.rate, ['ゆっくり','ややゆっくり','ふつう','はやめ'])}</div>
+    <div class="row"><span>声</span><select id="sVoice">${voiceOpts}</select></div>
+    <div class="row"><span>新しいことばを毎日自動で出す</span>${sel('sAuto', ['1','0'], S.settings.autoNew ? '1' : '0', ['オン','オフ'])}</div>
+    <div class="row"><span>声のテスト</span><button class="pbtn sub" id="pSay">「トマト」</button></div>
+
+    <h3>操作</h3>
+    <div class="btns">
+      <button class="pbtn" id="pAgain">${S.extraPlay === t ? '今日もう1回：許可済み' : '今日もう1回あそばせる'}</button>
+      <button class="pbtn" id="pNew" ${nextWord() ? '' : 'disabled'}>${S.forceNew ? '次回 新しいことば：指定済み' : '次回 必ず新しいことばを出す'}</button>
+      <button class="pbtn sub" id="pCopy">記録をコピー（JSON）</button>
+    </div>
+    <textarea id="pJson" hidden readonly></textarea>
+
+    <h3>テスト用</h3>
+    <div class="btns">
+      <button class="pbtn sub" id="pDayP">日付を＋1日</button>
+      <button class="pbtn sub" id="pDay0">日付を元に戻す</button>
+      <button class="pbtn warn" id="pReset">記録をすべて消す</button>
+    </div>
+    <p class="note">日付ずらしは、翌日以降の動き（新しいことば・進級）を親が先に確かめるための機能です。確認後は「元に戻す」を押してください。</p>
+  `;
+  $('#pClose').onclick = () => renderHome();
+  $('#sPass').onchange = e => { S.settings.passDays = Number(e.target.value); save(); renderParent(); };
+  $('#sRate').onchange = e => { S.settings.rate = Number(e.target.value); save(); };
+  $('#sVoice').onchange = e => { S.settings.voice = e.target.value; save(); };
+  $('#sAuto').onchange = e => { S.settings.autoNew = e.target.value === '1'; save(); renderParent(); };
+  $('#pSay').onclick = () => { unlockSpeech(); speak('トマト。 トマトは どれかな？'); };
+  $('#pAgain').onclick = () => { S.extraPlay = t; save(); renderParent(); };
+  $('#pNew').onclick = () => { S.forceNew = !S.forceNew; save(); renderParent(); };
+  $('#pCopy').onclick = async () => {
+    const txt = JSON.stringify(S, null, 1), ta = $('#pJson');
+    try{ await navigator.clipboard.writeText(txt); $('#pCopy').textContent = 'コピーしました'; }
+    catch(e){ ta.hidden = false; ta.value = txt; ta.focus(); ta.select(); $('#pCopy').textContent = '下の欄から選択してコピー'; }
+  };
+  $('#pDayP').onclick = () => { S.settings.dayOffset++; save(); renderParent(); };
+  $('#pDay0').onclick = () => { S.settings.dayOffset = 0; save(); renderParent(); };
+  let armed = false;
+  $('#pReset').onclick = () => {
+    if(!armed){ armed = true; $('#pReset').textContent = '本当に消す？もう一度押す'; setTimeout(() => { armed = false; const b = $('#pReset'); if(b) b.textContent = '記録をすべて消す'; }, 3000); return; }
+    const keep = S.settings; S = defaultState(); S.settings = keep; save(); renderParent();
+  };
+}
+
+// ---- iPad 向けの細かい対策
+document.addEventListener('gesturestart', e => e.preventDefault());
+document.addEventListener('dblclick', e => e.preventDefault(), {passive:false});
+document.addEventListener('visibilitychange', () => { if(document.hidden) stopSpeech(); });
+
+// ---- ホーム画面アイコン（その場で描いて設定）
+(() => {
+  try{
+    const c = document.createElement('canvas'); c.width = c.height = 180; const g = c.getContext('2d');
+    g.fillStyle = '#f6efe1'; g.fillRect(0,0,180,180);
+    g.strokeStyle = '#cf3d36'; g.lineWidth = 10; g.beginPath(); g.arc(90,90,70,0,Math.PI*2); g.stroke();
+    g.fillStyle = '#34397f'; g.font = 'bold 96px "Hiragino Maru Gothic ProN", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText('カ', 90, 96);
+    const l = document.createElement('link'); l.rel = 'apple-touch-icon'; l.href = c.toDataURL('image/png'); document.head.append(l);
+  }catch(e){}
+})();
+
+evaluateAll(null); save();
+renderHome();
+</script>
+</body>
+</html>
