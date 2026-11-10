@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="カタカナ忍者">
 <meta name="theme-color" content="#f6efe1">
-<title>カタカナ忍者 v0.1.1</title>
+<title>カタカナ忍者 v0.1.2</title>
 <style>
 :root{
   --paper:#f6efe1; --paper2:#efe4cc; --ink:#2b2a4c; --indigo:#34397f; --indigo2:#4b51a8;
@@ -31,10 +31,14 @@ button{font-family:inherit;color:inherit;border:0;background:none;cursor:pointer
 
 /* ---------- home ---------- */
 #home{justify-content:center;gap:min(4vh,36px)}
-#pcorner{position:absolute;top:env(safe-area-inset-top);right:env(safe-area-inset-right);width:72px;height:72px;
-  display:flex;align-items:center;justify-content:center;font-size:22px;opacity:.28}
-#pcorner .ring{position:absolute;inset:14px;border-radius:50%;border:3px solid var(--indigo);clip-path:inset(0 100% 0 0);transition:none}
-#pcorner.hold .ring{clip-path:inset(0 0 0 0);transition:clip-path 1.2s linear}
+/* 保護者入口：画面上端はアプリのバー等に隠れることがあるため右下に置く */
+#pcorner{position:absolute;right:calc(env(safe-area-inset-right) + 14px);bottom:calc(env(safe-area-inset-bottom) + 14px);
+  width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;
+  color:var(--indigo);background:rgba(255,255,255,.55);opacity:.55;z-index:20;
+  touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+#pcorner .ring{position:absolute;inset:-4px;border-radius:50%;border:4px solid var(--indigo);clip-path:inset(0 100% 0 0);transition:none;pointer-events:none}
+#pcorner.hold{opacity:1}
+#pcorner.hold .ring{clip-path:inset(0 0 0 0);transition:clip-path 1s linear}
 .brand{display:flex;flex-direction:column;align-items:center;gap:8px}
 .ninja{width:min(42vmin,300px);height:min(42vmin,300px);border-radius:50%;background:var(--card);
   display:flex;align-items:center;justify-content:center;font-size:min(26vmin,190px);
@@ -144,10 +148,10 @@ body.can-tap .card{pointer-events:auto}
 
   <!-- ホーム -->
   <section id="home" class="screen active">
-    <div id="pcorner" aria-label="保護者メニュー（長押し）"><div class="ring"></div>⚙︎</div>
+    <div id="pcorner" role="button" aria-label="保護者メニュー（長押し）"><div class="ring"></div>⚙︎</div>
     <div class="brand">
       <div class="ninja" id="homeNinja">🥷</div>
-      <h1>カタカナ にんじゃ<small>v0.1.1</small></h1>
+      <h1>カタカナ にんじゃ<small>v0.1.2</small></h1>
     </div>
     <div id="homeStamps"></div>
     <button id="startBtn" class="big">▶ しゅぎょう</button>
@@ -188,8 +192,8 @@ body.can-tap .card{pointer-events:auto}
 <script>
 'use strict';
 /* =========================================================
-   カタカナ忍者 v0.1.1
-   v0.1.1：Lv1を常に3択（似た語＋にせもの語）、Lv2に別の字を混ぜる、合格判定を1日3問以上に
+   カタカナ忍者 v0.1.2
+   v0.1.2：保護者入口を右下へ移動・長押しの判定を安定化／v0.1.1：Lv1を常に3択（似た語＋にせもの語）、Lv2に別の字を混ぜる、合格判定を1日3問以上に
    範囲：ステージ1「よめるかな」Lv1〜3 ／ 一の巻（5語・13字）
    ========================================================= */
 
@@ -620,10 +624,25 @@ $('#replay').onclick = replayHandler;
 // 保護者メニュー（長押し → 計算 → 設定・記録）
 // =========================================================
 (() => {
-  const c = $('#pcorner'); let tm = null;
+  // 長押し1秒、または素早く5回タップで開く（どちらの後も計算ゲートあり）
+  // iOS では長押し中に pointercancel / わずかな指のずれが起きやすいので、touch と mouse を直接扱い、15px までのずれは許す
+  const c = $('#pcorner'); let tm = null, sx = 0, sy = 0, taps = [];
   const cancel = () => { clearTimeout(tm); tm = null; c.classList.remove('hold'); };
-  c.addEventListener('pointerdown', e => { e.preventDefault(); c.classList.add('hold'); tm = setTimeout(() => { cancel(); openGate(); }, 1200); });
-  ['pointerup','pointerleave','pointercancel'].forEach(ev => c.addEventListener(ev, cancel));
+  const begin = (x, y) => { cancel(); sx = x; sy = y; void c.offsetWidth; c.classList.add('hold'); tm = setTimeout(() => { cancel(); taps = []; openGate(); }, 1000); };
+  const move = (x, y) => { if(tm && Math.hypot(x-sx, y-sy) > 15) cancel(); };
+  const end = () => {
+    if(!tm) return; cancel();
+    const now = Date.now(); taps = taps.filter(t => now - t < 3000); taps.push(now);
+    if(taps.length >= 5){ taps = []; openGate(); }
+  };
+  c.addEventListener('touchstart', e => { e.preventDefault(); const t = e.touches[0]; begin(t.clientX, t.clientY); }, {passive:false});
+  c.addEventListener('touchmove', e => { const t = e.touches[0]; move(t.clientX, t.clientY); }, {passive:true});
+  c.addEventListener('touchend', e => { e.preventDefault(); end(); }, {passive:false});
+  c.addEventListener('touchcancel', cancel);
+  c.addEventListener('mousedown', e => { e.preventDefault(); begin(e.clientX, e.clientY); });
+  window.addEventListener('mousemove', e => move(e.clientX, e.clientY));
+  window.addEventListener('mouseup', () => end());
+  c.addEventListener('contextmenu', e => e.preventDefault());
 })();
 let gateAns = 0, gateIn = '';
 function openGate(){
