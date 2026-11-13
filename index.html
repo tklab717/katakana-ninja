@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="カタカナ忍者">
 <meta name="theme-color" content="#f6efe1">
-<title>カタカナ忍者 v0.1.2</title>
+<title>カタカナ忍者 v0.1.3</title>
 <style>
 :root{
   --paper:#f6efe1; --paper2:#efe4cc; --ink:#2b2a4c; --indigo:#34397f; --indigo2:#4b51a8;
@@ -151,11 +151,12 @@ body.can-tap .card{pointer-events:auto}
     <div id="pcorner" role="button" aria-label="保護者メニュー（長押し）"><div class="ring"></div>⚙︎</div>
     <div class="brand">
       <div class="ninja" id="homeNinja">🥷</div>
-      <h1>カタカナ にんじゃ<small>v0.1.2</small></h1>
+      <h1>カタカナ にんじゃ<small>v0.1.3</small></h1>
     </div>
     <div id="homeStamps"></div>
     <button id="startBtn" class="big">▶ しゅぎょう</button>
     <div id="doneMsg" hidden>きょうの しゅぎょうは おしまい<br>また あした！</div>
+    <button id="refreshBtn" class="big blue" hidden>☀️ あたらしい ひ</button>
   </section>
 
   <!-- 出題 -->
@@ -192,8 +193,8 @@ body.can-tap .card{pointer-events:auto}
 <script>
 'use strict';
 /* =========================================================
-   カタカナ忍者 v0.1.2
-   v0.1.2：保護者入口を右下へ移動・長押しの判定を安定化／v0.1.1：Lv1を常に3択（似た語＋にせもの語）、Lv2に別の字を混ぜる、合格判定を1日3問以上に
+   カタカナ忍者 v0.1.3
+   v0.1.3：日付が変わったらホームを自動更新＋「あたらしい ひ」ボタン／v0.1.2：保護者入口を右下へ移動・長押しの判定を安定化／v0.1.1：Lv1を常に3択（似た語＋にせもの語）、Lv2に別の字を混ぜる、合格判定を1日3問以上に
    範囲：ステージ1「よめるかな」Lv1〜3 ／ 一の巻（5語・13字）
    ========================================================= */
 
@@ -607,10 +608,11 @@ async function reward(ups){
 // =========================================================
 function canPlayToday(){ const t = today(); return !S.playDays.includes(t) || S.extraPlay === t; }
 function renderHome(){
+  homeDay = today();
   const st = $('#homeStamps'); st.innerHTML = '';
   S.playDays.slice(-30).forEach(() => st.append(el('div', 'mini-hanko', '忍')));
   const ok = canPlayToday();
-  $('#startBtn').hidden = !ok; $('#doneMsg').hidden = ok;
+  $('#startBtn').hidden = !ok; $('#doneMsg').hidden = ok; $('#refreshBtn').hidden = ok;
   $('#homeNinja').textContent = ok ? '🥷' : '😴';
   $('#homeNinja').classList.toggle('sleep', !ok);
   show('home');
@@ -755,7 +757,23 @@ function renderParent(){
 // ---- iPad 向けの細かい対策
 document.addEventListener('gesturestart', e => e.preventDefault());
 document.addEventListener('dblclick', e => e.preventDefault(), {passive:false});
-document.addEventListener('visibilitychange', () => { if(document.hidden) stopSpeech(); });
+document.addEventListener('visibilitychange', () => { if(document.hidden) stopSpeech(); else refreshHomeIfDayChanged(); });
+
+// ---- 日付の変わり目：開きっぱなしでも翌日になったらホームを更新する
+let homeDay = null;
+function refreshHomeIfDayChanged(){
+  if(!$('#home').classList.contains('active') || running) return;
+  if(homeDay !== today()) renderHome();
+}
+window.addEventListener('pageshow', refreshHomeIfDayChanged);
+window.addEventListener('focus', refreshHomeIfDayChanged);
+setInterval(refreshHomeIfDayChanged, 60 * 1000);   // 1分ごとに日付を確認
+$('#refreshBtn').onclick = () => {                  // 手動で更新するボタン
+  unlockAudio(); sfxPop();
+  S = load(); renderHome();
+  if(!canPlayToday()) speak('まだ きょう だよ。 また あした ね！');
+  else speak('あたらしい ひ だよ！ しゅぎょう しよう！');
+};
 
 // ---- ホーム画面アイコン（その場で描いて設定）
 (() => {
