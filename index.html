@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="カタカナ忍者">
 <meta name="theme-color" content="#f6efe1">
-<title>カタカナ忍者 v0.1.3</title>
+<title>カタカナ忍者 v0.2</title>
 <style>
 :root{
   --paper:#f6efe1; --paper2:#efe4cc; --ink:#2b2a4c; --indigo:#34397f; --indigo2:#4b51a8;
@@ -141,6 +141,49 @@ body.can-tap .card{pointer-events:auto}
 #parent textarea{width:100%;height:120px;font-size:11px}
 .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;background:#eee}
 .pill.l1{background:#fde7e5}.pill.l2{background:#fff1c9}.pill.l3{background:#e1f0ff}.pill.l4{background:#d9f3e4}.pill.l0{background:#eee;color:#999}
+/* ---------- v0.2 ---------- */
+.ninja svg{width:86%;height:86%;display:block}
+.emo{display:inline-block;width:1em;height:1em;vertical-align:middle}
+.emo svg{width:100%;height:100%;display:block}
+.rankline{font-size:min(4.4vmin,28px);color:#6b6046;font-weight:700;text-align:center;margin-top:4px}
+.big.gold{background:var(--gold);color:#4a3a06;box-shadow:0 8px 0 #a17a0b;font-size:min(6vmin,38px)}
+.big.gold:active{transform:translateY(6px);box-shadow:0 2px 0 #a17a0b}
+.tile.pair{width:min(34vmin,260px);height:min(34vmin,260px);font-size:min(25vmin,190px)}
+.peek{font-size:min(20vmin,160px);animation:popin .45s ease-out}
+.bigchar{font-size:min(30vmin,220px);font-weight:700;background:var(--card);border-radius:28px;padding:0 .3em;box-shadow:0 8px 0 var(--line);animation:popin .45s ease-out}
+.makibanner{font-size:min(7vmin,48px);font-weight:800;color:#fff;background:var(--red);padding:.25em 1em;border-radius:16px;box-shadow:0 6px 0 #8f2622;animation:popin .5s ease-out;text-align:center;line-height:1.3}
+.makibanner small{display:block;font-size:.55em;letter-spacing:.2em}
+/* 巻物 */
+#scrollScr{justify-content:flex-start;gap:2.4vh;overflow-y:auto}
+.sc-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sc-title{display:flex;align-items:center;gap:12px}
+.sc-ninja{width:min(16vmin,110px);height:min(16vmin,110px);border-radius:50%;background:var(--card);box-shadow:0 5px 0 var(--line);display:flex;align-items:center;justify-content:center}
+.sc-ninja svg{width:86%;height:86%}
+.sc-title b{font-size:min(6vmin,40px);color:var(--indigo)}
+.sc-title small{display:block;font-size:min(3.6vmin,22px);color:#8a7f66}
+.makimono{position:relative;padding:0 min(3vw,22px)}
+.makimono:before,.makimono:after{content:'';position:absolute;top:-10px;bottom:-10px;width:min(3vw,22px);border-radius:10px;background:linear-gradient(90deg,#7a4a1c,#b97a3a,#7a4a1c)}
+.makimono:before{left:0}.makimono:after{right:0}
+.grid{direction:rtl;display:grid;grid-template-columns:repeat(11,minmax(0,1fr));grid-template-rows:repeat(5,auto);grid-auto-flow:column;
+  gap:min(1vmin,8px);width:min(88vw,150vh,1000px);background:#fff8e8;border-top:5px solid #c9a35a;border-bottom:5px solid #c9a35a;padding:min(2vmin,16px)}
+.cell{direction:ltr;aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:min(4.2vw,7vh,48px);
+  font-weight:700;position:relative;color:#ddd2bb;border:2px dashed #e6dcc6}
+.cell.empty{visibility:hidden}
+.cell.learn{background:var(--card);color:#77739a;border:2px solid var(--line);box-shadow:0 3px 0 var(--line)}
+.cell.read{background:var(--indigo);color:#fff;border:2px solid var(--indigo);box-shadow:0 3px 0 #1f2353}
+.cell .lvdots{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:min(1.6vw,11px);letter-spacing:1px;color:var(--red)}
+.cell .star{position:absolute;top:-6px;right:-6px;font-size:min(2.6vw,20px)}
+.cell:active{transform:scale(.94)}
+.sc-legend{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;font-size:min(3.4vmin,20px);color:#6b6046}
+.sc-legend span{display:inline-flex;align-items:center;gap:6px}
+.sc-legend i{display:inline-block;width:22px;height:22px;border-radius:6px}
+/* ごほうび */
+#rwProg{font-size:min(4.6vmin,30px);color:#6b6046;font-weight:700}
+.rankup{display:flex;flex-direction:column;align-items:center;gap:4px;animation:popin .6s ease-out both}
+.rankup .rn{width:min(26vmin,170px);height:min(26vmin,170px)}
+.rankup .rn svg{width:100%;height:100%}
+.rankup b{font-size:min(7vmin,46px);color:var(--red)}
+.pill.l4{background:#ece0ff}.pill.l5{background:#d9f3e4}.pill.lw{background:#f1eee4;color:#7a7360}
 </style>
 </head>
 <body>
@@ -150,13 +193,15 @@ body.can-tap .card{pointer-events:auto}
   <section id="home" class="screen active">
     <div id="pcorner" role="button" aria-label="保護者メニュー（長押し）"><div class="ring"></div>⚙︎</div>
     <div class="brand">
-      <div class="ninja" id="homeNinja">🥷</div>
-      <h1>カタカナ にんじゃ<small>v0.1.3</small></h1>
+      <div class="ninja" id="homeNinja"></div>
+      <h1>カタカナ にんじゃ<small>v0.2.0</small></h1>
+      <div class="rankline" id="rankLine"></div>
     </div>
     <div id="homeStamps"></div>
     <button id="startBtn" class="big">▶ しゅぎょう</button>
     <div id="doneMsg" hidden>きょうの しゅぎょうは おしまい<br>また あした！</div>
     <button id="refreshBtn" class="big blue" hidden>☀️ あたらしい ひ</button>
+    <button id="scrollBtn" class="big gold">📜 まきもの</button>
   </section>
 
   <!-- 出題 -->
@@ -172,8 +217,24 @@ body.can-tap .card{pointer-events:auto}
       <div class="hanko" id="hanko"><b>忍</b><span id="hankoDay"></span></div>
       <div id="rwText"></div>
       <div id="rwUps"></div>
+      <div id="rwProg"></div>
+      <div id="rwRank"></div>
     </div>
     <button id="rwDone" class="big blue" hidden>おわり</button>
+  </section>
+
+  <!-- 巻物 -->
+  <section id="scrollScr" class="screen">
+    <div class="sc-head">
+      <div class="sc-title"><div class="sc-ninja" id="scNinja"></div><div><b>カタカナ まきもの</b><small id="scSub"></small></div></div>
+      <button id="scBack" class="big blue" style="font-size:min(5vmin,32px)">もどる</button>
+    </div>
+    <div class="makimono"><div class="grid" id="grid"></div></div>
+    <div class="sc-legend">
+      <span><i style="background:var(--indigo)"></i>よめた</span>
+      <span><i style="background:var(--card);border:2px solid var(--line)"></i>しゅぎょうちゅう</span>
+      <span>⭐ にてるもじも みきわけた</span>
+    </div>
   </section>
 
   <!-- 保護者 -->
@@ -193,42 +254,80 @@ body.can-tap .card{pointer-events:auto}
 <script>
 'use strict';
 /* =========================================================
-   カタカナ忍者 v0.1.3
-   v0.1.3：日付が変わったらホームを自動更新＋「あたらしい ひ」ボタン／v0.1.2：保護者入口を右下へ移動・長押しの判定を安定化／v0.1.1：Lv1を常に3択（似た語＋にせもの語）、Lv2に別の字を混ぜる、合格判定を1日3問以上に
-   範囲：ステージ1「よめるかな」Lv1〜3 ／ 一の巻（5語・13字）
+   カタカナ忍者 v0.2.0
+   v0.2：一の巻〜五の巻の全ワード（清音46字＋ー）、Lv4 にてるもじ、巻物とランク
+   （v0.1.3：日付の変わり目対応／v0.1.2：保護者入口を右下へ／v0.1.1：3択化・合格は1日3問以上）
    ========================================================= */
+const VERSION = 'v0.2.0';
 
-// ---- コンテンツ（一の巻）。出す順番 = 1日1語（新しい字は最大3字/日）
+// ---- 絵文字がない語の絵（手描きSVG）
+const SVG = {
+  seesaw:`<svg viewBox="0 0 100 100"><polygon points="50,58 37,85 63,85" fill="#cf3d36"/><g transform="rotate(-16 50 56)"><rect x="6" y="51" width="88" height="8" rx="4" fill="#e8b931" stroke="#a17a0b" stroke-width="2"/><rect x="15" y="38" width="5" height="14" rx="2" fill="#34397f"/><rect x="80" y="38" width="5" height="14" rx="2" fill="#34397f"/><rect x="10" y="35" width="15" height="5" rx="2.5" fill="#34397f"/><rect x="75" y="35" width="15" height="5" rx="2.5" fill="#34397f"/></g><rect x="4" y="85" width="92" height="5" rx="2.5" fill="#7cb342"/></svg>`,
+  sweater:`<svg viewBox="0 0 100 100"><path d="M34 16 L18 23 L5 60 L18 65 L27 42 L27 88 L73 88 L73 42 L82 65 L95 60 L82 23 L66 16 Q50 30 34 16Z" fill="#e05a47" stroke="#9b2f22" stroke-width="2.5" stroke-linejoin="round"/><path d="M34 16 Q50 30 66 16" fill="none" stroke="#9b2f22" stroke-width="5"/><rect x="27" y="50" width="46" height="6" fill="#fff3d6"/><rect x="27" y="62" width="46" height="6" fill="#fff3d6"/><rect x="27" y="81" width="46" height="7" fill="#9b2f22"/></svg>`,
+  aircon:`<svg viewBox="0 0 100 100"><rect x="6" y="14" width="88" height="36" rx="9" fill="#fff" stroke="#8da2b5" stroke-width="3"/><rect x="14" y="38" width="72" height="5" rx="2.5" fill="#cfd8e3"/><circle cx="82" cy="24" r="3.5" fill="#2f9e63"/><path d="M26 58 q5 8 0 15 q-5 8 0 15 M50 58 q5 8 0 15 q-5 8 0 15 M74 58 q5 8 0 15 q-5 8 0 15" fill="none" stroke="#5aa9e6" stroke-width="4.5" stroke-linecap="round"/></svg>`,
+  ukulele:`<svg viewBox="0 0 100 100"><g transform="rotate(35 50 50)"><rect x="46" y="6" width="8" height="46" fill="#8d5a2b"/><rect x="42.5" y="0" width="15" height="13" rx="3" fill="#6b4220"/><circle cx="50" cy="61" r="15" fill="#e2a45c" stroke="#9c6a2f" stroke-width="2"/><circle cx="50" cy="80" r="18" fill="#e2a45c" stroke="#9c6a2f" stroke-width="2"/><circle cx="50" cy="61" r="13.5" fill="#e2a45c"/><circle cx="50" cy="69" r="6" fill="#5b3a1a"/><rect x="42" y="85" width="16" height="4" rx="2" fill="#6b4220"/><g stroke="#fff" stroke-width=".9"><line x1="47.6" y1="8" x2="47.6" y2="86"/><line x1="49.2" y1="8" x2="49.2" y2="86"/><line x1="50.8" y1="8" x2="50.8" y2="86"/><line x1="52.4" y1="8" x2="52.4" y2="86"/></g></g></svg>`,
+};
+
+// ---- コンテンツ。出す順番 = 1日1語（各巻の語は、その巻までに出た字だけで読める）
 const WORDS = [
-  {w:'トマト', e:'🍅'},  // ト マ
-  {w:'メロン', e:'🍈'},  // メ ロ ン
-  {w:'ミルク', e:'🥛'},  // ミ ル ク
-  {w:'アイス', e:'🍦'},  // ア イ ス
-  {w:'カメラ', e:'📷'},  // カ ラ（メは既習）
+  {w:'トマト',e:'🍅',k:1},{w:'メロン',e:'🍈',k:1},{w:'ミルク',e:'🥛',k:1},{w:'アイス',e:'🍦',k:1},{w:'カメラ',e:'📷',k:1},
+  {w:'キリン',e:'🦒',k:2},{w:'コアラ',e:'🐨',k:2},{w:'ライオン',e:'🦁',k:2},{w:'ワニ',e:'🐊',k:2},{w:'ハム',e:'🍖',k:2},
+  {w:'テント',e:'⛺',k:3},{w:'ナイフ',e:'🔪',k:3},{w:'ホテル',e:'🏨',k:3},{w:'サイレン',e:'🚨',k:3},{w:'メモ',e:'📝',k:3},
+  {w:'ケーキ',e:'🍰',k:4},{w:'タクシー',e:'🚕',k:4},{w:'ヨーヨー',e:'🪀',k:4},{w:'シーソー',svg:'seesaw',k:4},{w:'セーター',svg:'sweater',k:4},{w:'ヒーロー',e:'🦸',k:4},
+  {w:'ネクタイ',e:'👔',k:5},{w:'ノート',e:'📓',k:5},{w:'チーター',e:'🐆',k:5},{w:'ツナ',e:'🐟',k:5},{w:'タイヤ',e:'🛞',k:5},
+  {w:'エアコン',svg:'aircon',k:5},{w:'ウクレレ',svg:'ukulele',k:5},{w:'カヌー',e:'🛶',k:5},{w:'ユニコーン',e:'🦄',k:5},{w:'ヘリ',e:'🚁',k:5},
+  {w:'ヲ',e:'',k:5,charOnly:true},   // カタカナ語にほぼ出ないので「字だけ」で覚える
 ];
-const KEY = 'katakana-ninja-v01';
+const PICWORDS = WORDS.filter(w => !w.charOnly);
+const MAKI = ['', 'いちのまき', 'にのまき', 'さんのまき', 'よんのまき', 'ごのまき'];
+const MAKI_K = ['', '一の巻', '二の巻', '三の巻', '四の巻', '五の巻'];
+const MAKI_THEME = ['', 'たべもの', 'どうぶつ', 'おでかけ', 'のばす ぼう', 'いろいろ'];
+
+// 巻物の並び（右から ア行・カ行…。縦に5字）
+const COLS = [['ア','イ','ウ','エ','オ'],['カ','キ','ク','ケ','コ'],['サ','シ','ス','セ','ソ'],['タ','チ','ツ','テ','ト'],['ナ','ニ','ヌ','ネ','ノ'],
+  ['ハ','ヒ','フ','ヘ','ホ'],['マ','ミ','ム','メ','モ'],['ヤ','','ユ','','ヨ'],['ラ','リ','ル','レ','ロ'],['ワ','','','','ヲ'],['ン','','','','ー']];
+const KANA46 = COLS.flat().filter(c => c && c !== 'ー');
+// Lv4 にてるもじ の組（企画書どおり）
+const GROUPS = [['シ','ツ'],['ソ','ン'],['ク','ケ','タ'],['ウ','ワ','フ'],['コ','ユ'],['ス','ヌ']];
+const groupOf = ch => GROUPS.find(g => g.includes(ch)) || null;
+
+const KEY = 'katakana-ninja-v01';   // v0.1 の記録をそのまま引き継ぐため、保存先は変えない
 const ALL_CHARS = [...new Set(WORDS.map(w => w.w).join(''))];
-const MAX_LV = 3;           // 読みのレベル上限。4 = 「よめた」
-const PASS_RATE = 0.8;      // 1日の正答率の合格ライン
-const MIN_TRIES = 3;        // 合格判定に必要な1日の出題数（3問×8割＝実質全問正解。当てずっぽうで通る確率を下げる）
+const LV_READ = 3, LV_PAIR = 4, DONE = 5;   // 1〜3：読む ／ 4：にてるもじ ／ 5：よめた（復習のみ）
+const PASS_RATE = 0.8, PASS_RATE_PAIR = 0.9;
+const MIN_TRIES = 3;        // 合格判定に必要な1日の出題数
 const LOW_RATE = 0.6;       // 前回これ未満なら新しい語を出さない
-const LV_NAME = ['', 'Lv1 えあわせ', 'Lv2 もじひろい', 'Lv3 よんでえらぶ', 'よめた'];
+const LV_NAME = ['', 'Lv1 えあわせ', 'Lv2 もじひろい', 'Lv3 よんでえらぶ', 'Lv4 にてるもじ', 'よめた'];
+const RANKS = [
+  {min:0,  label:'みならい', kanji:'見習い', suit:'#6b7a8f', band:'#b6bfcc', belt:'#4a5566'},
+  {min:10, label:'げにん',   kanji:'下忍',   suit:'#2f7d55', band:'#e8b931', belt:'#1e5a3c'},
+  {min:25, label:'ちゅうにん', kanji:'中忍', suit:'#34397f', band:'#cf3d36', belt:'#e8b931'},
+  {min:46, label:'じょうにん', kanji:'上忍', suit:'#9b231d', band:'#e8b931', belt:'#e8b931'},
+];
 const PRAISE = ['せいかい！', 'すごい！', 'やったね！', 'にんにん！', 'おみごと！'];
 const TEST = /[?&]test=1/.test(location.search);   // 自動テスト用（音声を待たない）
 
 // ---- 状態
 function defaultState(){
-  return {v:1, words:[], lastIntro:null, forceNew:false, extraPlay:null,
+  return {v:2, words:[], lastIntro:null, forceNew:false, extraPlay:null,
     chars:{}, sessions:[], playDays:[],
-    settings:{passDays:2, rate:0.9, autoNew:true, voice:'', dayOffset:0}};
+    settings:{passDays:2, rate:0.9, autoNew:true, voice:'', dayOffset:0, maxLearn:9}};
 }
 let S = load();
 function load(){
   try{
     const raw = localStorage.getItem(KEY);
-    if(raw){ const s = JSON.parse(raw); const d = defaultState(); s.settings = Object.assign(d.settings, s.settings||{}); return Object.assign(d, s); }
+    if(raw){ const s = JSON.parse(raw); const d = defaultState(); s.settings = Object.assign(d.settings, s.settings||{}); return migrate(Object.assign(d, s)); }
   }catch(e){}
   return defaultState();
+}
+// v0.1 では Lv3 通過＝lv4（よめた）。v0.2 では にてるもじ の組がある字は Lv4 へ、ない字は「よめた」へ
+function migrate(s){
+  if((s.v||1) < 2){
+    for(const ch in s.chars){ const r = s.chars[ch]; if(r.lv >= 4){ r.lv = groupOf(ch) ? LV_PAIR : DONE; r.pass = 0; } }
+    s.v = 2;
+  }
+  return s;
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 
@@ -244,8 +343,25 @@ const pick = a => a[Math.floor(Math.random()*a.length)];
 function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 const uniq = s => [...new Set([...s])];
 const toHira = s => s.replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0)-0x60));
+const say = c => c === 'ー' ? 'のばす ぼう' : toHira(c);   // 1字の読み方
 function el(tag, cls, text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
 function show(id){ document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id===id)); }
+const wordOf = w => WORDS.find(x => x.w === w);
+// 絵（絵文字 or SVG）を el に入れる
+function putPic(node, word){ if(word.svg){ const s = el('span', 'emo'); s.innerHTML = SVG[word.svg]; node.append(s); } else node.append(word.e); return node; }
+
+// ---- 忍者（ランクで服の色が変わる）
+function ninjaSVG(rk, sleeping){
+  const c = RANKS[rk];
+  const eyes = sleeping
+    ? '<path d="M35 43 q5 4 10 0 M55 43 q5 4 10 0" stroke="#2b2a4c" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    : '<circle cx="40" cy="42" r="4.2" fill="#2b2a4c"/><circle cx="60" cy="42" r="4.2" fill="#2b2a4c"/><circle cx="41.5" cy="40.5" r="1.3" fill="#fff"/><circle cx="61.5" cy="40.5" r="1.3" fill="#fff"/>';
+  return `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="95" rx="30" ry="4" fill="rgba(0,0,0,.08)"/>
+    <path d="M23 94 Q23 64 50 62 Q77 64 77 94Z" fill="${c.suit}"/><rect x="25" y="78" width="50" height="6" fill="${c.belt}"/>
+    <circle cx="50" cy="42" r="28" fill="${c.suit}"/><rect x="26" y="33" width="48" height="18" rx="9" fill="#f6d2b0"/>${eyes}
+    <rect x="22" y="20" width="56" height="7" rx="3.5" fill="${c.band}"/><path d="M76 23 L92 15 L90 22 L94 30 L76 26Z" fill="${c.band}"/>
+    ${sleeping ? '<text x="78" y="16" font-size="14" fill="#34397f" font-weight="700">z</text>' : ''}</svg>`;
+}
 
 // =========================================================
 // 音（読み上げ・効果音）
@@ -277,9 +393,7 @@ function speak(text){
     }catch(e){ fin(); }
   });
 }
-function unlockSpeech(){ // iOS：最初のタップの中で一度だけ空発話
-  try{ const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); }catch(e){}
-}
+function unlockSpeech(){ try{ const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); }catch(e){} }
 let ac = null;
 function unlockAudio(){ try{ ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if(ac.state === 'suspended') ac.resume(); }catch(e){} }
 function tone(freq, at, dur, type='sine', gain=.16){
@@ -295,25 +409,35 @@ const sfxGood  = () => { tone(784,0,.18); tone(1047,.1,.22); tone(1568,.2,.35,'t
 const sfxTry   = () => { tone(392,0,.18,'triangle',.12); tone(330,.12,.25,'triangle',.1); };
 const sfxStamp = () => { tone(110,0,.25,'square',.12); tone(70,.02,.3,'sine',.25); };
 const sfxPop   = () => { tone(660,0,.08,'triangle',.08); };
+const sfxRank  = () => { [523,659,784,1047,1319].forEach((f,i) => tone(f, i*.12, .3, 'triangle', .12)); };
 
 // =========================================================
 // 学習記録と進級
 // =========================================================
 function newChar(){ return {lv:1, pass:0, passDates:[], day:null, total:{c:0,t:0}, interval:0, due:null}; }
 function acc(ch){ const t = S.chars[ch].total; return t.t ? t.c/t.t : 0; }
+// 同じ組で、もう読める（Lv3を通過した）相手の字
+function partners(ch){ const g = groupOf(ch); return g ? g.filter(p => p !== ch && S.chars[p] && S.chars[p].lv >= LV_PAIR) : []; }
+// learn：レベルの練習中 ／ review：間隔をあけた復習（よめた字、または Lv4 で相手の字がまだの字）
+function mode(ch){ const r = S.chars[ch]; if(r.lv >= DONE) return 'review'; if(r.lv === LV_PAIR && !partners(ch).length) return 'review'; return 'learn'; }
+const effLv = ch => mode(ch) === 'review' ? LV_READ : S.chars[ch].lv;
+const isRead = ch => !!S.chars[ch] && S.chars[ch].lv >= LV_PAIR;
+const readCount = () => KANA46.filter(isRead).length;
+function rankIdx(n = readCount()){ let k = 0; RANKS.forEach((r,i) => { if(n >= r.min) k = i; }); return k; }
 
-// 1問ぶんの記録。q.lv と同じレベルにいる字だけを数える
-function record(chars, lv, ok){
+// 1問ぶんの記録。練習中の字は q.lv と同じレベルにいるときだけ数える
+function record(q, ok){
   const t = today();
-  for(const ch of chars){
+  for(const ch of q.credit){
     const r = S.chars[ch]; if(!r) continue;
-    if(r.lv > MAX_LV){                 // 「よめた」字は間隔反復で復習
+    if(mode(ch) === 'review'){
+      if(!(q.kind === 'read' || q.kind === 'pair' || q.word.charOnly)) continue;   // 音の助けがある問題では復習扱いにしない
       r.total.t++; if(ok) r.total.c++;
       r.interval = ok ? Math.min((r.interval||1)*2, 16) : 1;
       r.due = addDays(t, r.interval);
       continue;
     }
-    if(r.lv !== lv) continue;
+    if(r.lv !== q.lv) continue;
     if(!r.day || r.day.date !== t || r.day.lv !== r.lv) r.day = {date:t, lv:r.lv, c:0, t:0};
     r.day.t++; if(ok) r.day.c++;
     r.total.t++; if(ok) r.total.c++;
@@ -322,28 +446,34 @@ function record(chars, lv, ok){
 // 1日の成績で「合格日」を数え、必要日数に達したら進級
 function evaluate(ch, ups){
   const r = S.chars[ch], d = r.day;
-  if(!d || d.lv !== r.lv || r.lv > MAX_LV) return;
+  if(!d || d.lv !== r.lv || r.lv >= DONE) return;
   if(r.passDates.includes(d.date)) return;               // 同じ日に2回は数えない
-  if(d.t >= MIN_TRIES && d.c/d.t >= PASS_RATE){
+  const rate = r.lv === LV_PAIR ? PASS_RATE_PAIR : PASS_RATE;
+  if(d.t >= MIN_TRIES && d.c/d.t >= rate){
     r.passDates.push(d.date); r.pass++;
     if(r.pass >= S.settings.passDays){
-      r.lv++; r.pass = 0;
-      if(r.lv > MAX_LV){ r.interval = 1; r.due = addDays(d.date, 1); }
-      ups && ups.push({ch, lv:r.lv});
+      const from = r.lv; r.pass = 0;
+      if(from === LV_READ){ r.lv = groupOf(ch) ? LV_PAIR : DONE; r.interval = 1; r.due = addDays(d.date, 1); }
+      else if(from === LV_PAIR){ r.lv = DONE; r.interval = 2; r.due = addDays(d.date, 2); }
+      else r.lv++;
+      ups && ups.push({ch, from, lv:r.lv});
     }
   }
 }
 function evaluateAll(ups){ Object.keys(S.chars).forEach(ch => evaluate(ch, ups)); }
 
 function nextWord(){ return WORDS.find(w => !S.words.includes(w.w)) || null; }
+const learningCount = () => Object.keys(S.chars).filter(ch => S.chars[ch].lv <= LV_READ).length;
 function newWordReason(){
   const nw = nextWord();
-  if(!nw) return [false, '一の巻の5語はすべて導入済み'];
+  if(!nw) return [false, '五の巻まで、すべてのことばを導入済み'];
   if(S.forceNew) return [true, '保護者が「次回出す」を指定'];
   if(!S.settings.autoNew) return [false, '自動で出す設定がオフ'];
   if(S.lastIntro === today()) return [false, '今日はもう新しい語を出した'];
   const last = S.sessions[S.sessions.length-1];
   if(last && last.n > 0 && last.ok/last.n < LOW_RATE) return [false, `前回の正答率が${Math.round(LOW_RATE*100)}%未満なので復習に専念`];
+  const lc = learningCount();
+  if(lc >= S.settings.maxLearn) return [false, `Lv1〜3で練習中の字が${lc}字（上限${S.settings.maxLearn}字）あるので、読めるようになるまで復習に専念`];
   return [true, '通常どおり1語'];
 }
 function introduceWord(w){
@@ -354,10 +484,12 @@ function introduceWord(w){
 
 // ---- 出題の選び方
 function wordsWith(ch){ return WORDS.filter(w => S.words.includes(w.w) && w.w.includes(ch)); }
+function hintWord(ch){ const c = wordsWith(ch); return c.slice().sort((a,b) => a.w.indexOf(ch) - b.w.indexOf(ch))[0] || null; }
 function reviewPool(){
   const t = today();
-  return Object.keys(S.chars).filter(ch => { const r = S.chars[ch]; return r.lv <= MAX_LV || !r.due || r.due <= t; });
+  return Object.keys(S.chars).filter(ch => mode(ch) === 'learn' || !S.chars[ch].due || S.chars[ch].due <= t);
 }
+function triesToday(ch){ const r = S.chars[ch], d = r.day; return d && d.date === today() && d.lv === r.lv ? d.t : 0; }
 function pickReviewTarget(sess){
   let pool = reviewPool(); if(!pool.length) pool = Object.keys(S.chars);
   if(!pool.length) return null;
@@ -366,65 +498,80 @@ function pickReviewTarget(sess){
     if(known.length) return known[0];
   }
   // 進級判定には1日 MIN_TRIES 問以上が必要 → 出し始めた字は、間に1問はさんで規定数まで出す
-  const pair = pool.filter(ch => triesToday(ch) > 0 && triesToday(ch) < MIN_TRIES && S.chars[ch].lv <= MAX_LV && ch !== sess.lastTarget);
+  const pair = pool.filter(ch => mode(ch) === 'learn' && triesToday(ch) > 0 && triesToday(ch) < MIN_TRIES && ch !== sess.lastTarget);
   if(pair.length) return pick(pair);
   // 新しく選ぶ字は「最後に重点練習した日が古い順」→「レベルが低い順」で公平に回す
   const fresh = pool.filter(ch => !sess.tcnt[ch]);
   const base = fresh.length ? fresh : pool;
-  return shuffle(base).sort((a,b) => (S.chars[a].lastT||'').localeCompare(S.chars[b].lastT||'') || S.chars[a].lv - S.chars[b].lv)[0];
+  return shuffle(base).sort((a,b) => (S.chars[a].lastT||'').localeCompare(S.chars[b].lastT||'') || effLv(a) - effLv(b))[0];
 }
-function triesToday(ch){ const r = S.chars[ch], d = r.day; return d && d.date === today() && d.lv === r.lv ? d.t : 0; }
+// 新しいことばの直後は、まだ読めない字を優先して出す
 function pickNewTarget(word, sess){
-  return shuffle(uniq(word.w)).sort((a,b) => (sess.cnt[a]||0) - (sess.cnt[b]||0))[0];
+  const cs = uniq(word.w), fresh = cs.filter(c => S.chars[c].lv <= LV_READ);
+  return shuffle(fresh.length ? fresh : cs).sort((a,b) => (sess.cnt[a]||0) - (sess.cnt[b]||0))[0];
+}
+// その字以外の、もう出てきた字（ヲにはヨを混ぜて見比べさせる）
+function otherChars(ch, n){
+  const learned = Object.keys(S.chars).filter(c => c !== ch && c !== 'ー' && c !== 'ヲ');
+  let src = shuffle(learned.length >= n ? learned : KANA46.filter(c => c !== ch));
+  if(ch === 'ヲ' && S.chars['ヨ']) src = ['ヨ', ...src.filter(c => c !== 'ヨ')];
+  return src.slice(0, n);
 }
 function makeQ(ch, sess, forced){
-  const lv = Math.min(S.chars[ch].lv, MAX_LV);
+  const m = mode(ch), lv = m === 'review' ? LV_READ : S.chars[ch].lv;
   let word = forced;
   if(!word){
     // 同じレベルの字が多い語を優先（Lv1/Lv3は語の中の同レベルの字すべてが1問ぶん記録される）
     const cands = wordsWith(ch);
     const fresh = cands.filter(w => w.w !== sess.lastWord);
-    const same = w => uniq(w.w).filter(c => S.chars[c] && Math.min(S.chars[c].lv, MAX_LV) === lv).length;
+    const same = w => uniq(w.w).filter(c => S.chars[c] && effLv(c) === lv).length;
     word = shuffle(fresh.length ? fresh : cands).sort((a,b) => same(b) - same(a))[0];
   }
-  const others = shuffle(WORDS.filter(w => w.w !== word.w));
   const q = {lv, ch, word};
+  if(word.charOnly){                         // ヲ：字だけで探す
+    q.kind = 'tile'; q.tiles = shuffle([ch, ...otherChars(ch, 2)]); q.credit = [ch]; return q;
+  }
+  if(lv === LV_PAIR){                        // Lv4：似た字の2択
+    q.kind = 'pair'; q.tiles = shuffle([ch, pick(partners(ch))]); q.word = hintWord(ch) || word; q.credit = [ch]; return q;
+  }
+  const known = PICWORDS.filter(w => w.w !== word.w && S.words.includes(w.w));
+  const unknown = PICWORDS.filter(w => w.w !== word.w && !S.words.includes(w.w));
+  const others = shuffle(known).concat(shuffle(unknown));   // もう出てきた語を優先
   if(lv === 1){
     // 3択：①共通の字が多い本物の語 ②1字だけ違う「にせもの」語（先頭以外を変える＝語全体を見ないと選べない）
     const share = w => uniq(w.w).filter(c => word.w.includes(c)).length;
-    const real = others.slice().sort((a,b) => share(b) - share(a))[0];
-    q.choices = shuffle([word, real, makeDecoy(word)]);
-  }
-  if(lv === 2){
+    const base = known.length ? shuffle(known) : others;
+    const real = base.slice().sort((a,b) => share(b) - share(a))[0];
+    q.kind = 'pick'; q.choices = shuffle([word, real, makeDecoy(word)]);
+  } else if(lv === 2){
     // その語の字（重複なし）＋その語にない字を1枚。同じ字が2つあっても正解は1枚だけ
     const own = uniq(word.w);
-    const learned = Object.keys(S.chars).filter(c => !own.includes(c));
-    const all = ALL_CHARS.filter(c => !own.includes(c));
-    const extra = shuffle(learned.length ? learned : all).slice(0, 1);
-    q.tiles = shuffle([...own, ...extra]);
+    const learned = Object.keys(S.chars).filter(c => !own.includes(c) && c !== 'ヲ');
+    const extra = shuffle(learned.length ? learned : KANA46.filter(c => !own.includes(c))).slice(0, 1);
+    q.kind = 'tile'; q.tiles = shuffle([...own, ...extra]);
+  } else {
+    q.kind = 'read'; q.choices = shuffle([word, ...others.slice(0, 2)]);
   }
-  if(lv === 3) q.choices = shuffle([word, ...others.slice(0, 2)]);
   q.credit = lv === 2 ? [ch] : uniq(word.w);
   return q;
 }
 // 1字だけ差し替えた実在しない語（例：トマト→トメト）
 function makeDecoy(word){
   const chars = [...word.w], real = new Set(WORDS.map(w => w.w));
-  const learned = Object.keys(S.chars);
-  for(let k=0;k<30;k++){
+  const learned = Object.keys(S.chars).filter(c => c !== 'ヲ');
+  const pool = ALL_CHARS.filter(c => c !== 'ヲ');
+  for(let k=0;k<40;k++){
     const pos = 1 + Math.floor(Math.random()*(chars.length-1));
-    const src = (k < 15 && learned.length > 1) ? learned : ALL_CHARS;
-    const c = pick(src.filter(x => x !== chars[pos]));
+    const src = (k < 20 && learned.length > 1) ? learned : pool;
+    const c = pick(src.filter(x => x !== chars[pos] && !(x === 'ー' && (pos === 0 || chars[pos-1] === 'ー'))));
+    if(!c) continue;
     const d = chars.slice(); d[pos] = c; const w = d.join('');
     if(w !== word.w && !real.has(w)) return {w, e:'', decoy:true};
   }
-  const d = chars.slice(); d[1] = ALL_CHARS.find(x => x !== chars[1]); return {w:d.join(''), e:'', decoy:true};
+  const d = chars.slice(); d[1] = pool.find(x => x !== chars[1] && x !== 'ー'); return {w:d.join(''), e:'', decoy:true};
 }
-function isCorrect(q, i){ return q.lv === 2 ? q.tiles[i] === q.ch : q.choices[i].w === q.word.w; }
-function correctIdx(q){
-  if(q.lv === 2) return [q.tiles.indexOf(q.ch)];
-  return [q.choices.findIndex(w => w.w === q.word.w)];
-}
+function isCorrect(q, i){ return q.tiles ? q.tiles[i] === q.ch : q.choices[i].w === q.word.w; }
+function correctIdx(q){ return q.tiles ? [q.tiles.indexOf(q.ch)] : [q.choices.findIndex(w => w.w === q.word.w)]; }
 
 // =========================================================
 // 画面：出題
@@ -437,31 +584,37 @@ function onChoice(i){
   document.body.classList.remove('can-tap');
   stopSpeech(); r(i);
 }
+function wordRow(word, cls){ const row = el('div', cls); [...word.w].forEach(c => row.append(el('span', '', c))); return row; }
 function renderQ(q){
   const stage = $('#stage'), ans = $('#answers');
-  stage.innerHTML = ''; ans.innerHTML = ''; ans.className = 'answers lv' + q.lv;
+  stage.innerHTML = ''; ans.innerHTML = ''; ans.className = 'answers ' + q.kind;
   $('#replay').style.visibility = 'visible';
-  if(q.lv === 1){
-    stage.append(el('div', 'pic', q.word.e));
+  const tileBtn = (c, i, cls) => { const b = el('button', 'card tile' + (cls||''), c); b.onclick = () => onChoice(i); ans.append(b); };
+  if(q.kind === 'pick'){
+    ans.classList.add('lv1');
+    stage.append(putPic(el('div', 'pic'), q.word));
     q.choices.forEach((w,i) => { const b = el('button', 'card wcard', w.w); b.onclick = () => onChoice(i); ans.append(b); });
-  } else if(q.lv === 2){
-    stage.append(el('div', 'pic', q.word.e));
-    const row = el('div', 'introword sm'); row.id = 'qword'; [...q.word.w].forEach(c => row.append(el('span', '', c))); stage.append(row);
-    q.tiles.forEach((c,i) => { const b = el('button', 'card tile', c); b.onclick = () => onChoice(i); ans.append(b); });
+  } else if(q.kind === 'tile'){
+    if(q.word.charOnly) stage.append(el('div', 'peek', '📜'));
+    else { stage.append(putPic(el('div', 'pic'), q.word)); const row = wordRow(q.word, 'introword sm'); row.id = 'qword'; stage.append(row); }
+    q.tiles.forEach((c,i) => tileBtn(c, i));
+  } else if(q.kind === 'pair'){
+    stage.append(el('div', 'peek', '👀'));
+    q.tiles.forEach((c,i) => tileBtn(c, i, ' pair'));
   } else {
     stage.append(el('div', 'bigword', q.word.w));
-    q.choices.forEach((w,i) => { const b = el('button', 'card pcard', w.e); b.onclick = () => onChoice(i); ans.append(b); });
+    q.choices.forEach((w,i) => { const b = putPic(el('button', 'card pcard'), w); b.onclick = () => onChoice(i); ans.append(b); });
   }
 }
 async function promptQ(q){
-  if(q.lv === 1){ await speak(`${q.word.w}。 ${q.word.w}は どれかな？`); }
-  else if(q.lv === 2){
+  if(q.kind === 'pick'){ await speak(`${q.word.w}。 ${q.word.w}は どれかな？`); }
+  else if(q.kind === 'tile'){
     const row = $('#qword');
-    if(row) for(const s of [...row.children]){ s.classList.add('lit'); await speak(toHira(s.textContent)); s.classList.remove('lit'); }
-    await speak(`${toHira(q.ch)} は どれ？`);
-  } else {
-    await speak('じを よんで、 あう えを タッチしてね');   // 答えの音は出さない
+    if(row) for(const s of [...row.children]){ s.classList.add('lit'); await speak(say(s.textContent)); s.classList.remove('lit'); }
+    await speak(`${say(q.ch)} は どれ？`);
   }
+  else if(q.kind === 'pair'){ await speak(`${say(q.ch)} は どっち？`); }
+  else { await speak('じを よんで、 あう えを タッチしてね'); }   // 答えの音は出さない
 }
 function burst(target){
   const r = target.getBoundingClientRect(), cx = r.left + r.width/2, cy = r.top + r.height/2;
@@ -476,9 +629,17 @@ function burst(target){
 async function celebrate(q, i){
   const b = $('#answers').children[i];
   b.classList.add('good'); sfxGood(); burst(b);
-  if(q.lv === 3) await speak(q.word.w);       // 自力で読めた後に音で答え合わせ
+  if(q.kind === 'read') await speak(q.word.w);       // 自力で読めた後に音で答え合わせ
   await speak(pick(PRAISE));
   await sleep(300);
+}
+// Lv4 でまちがえたとき：その字が入ったことばを見せて「シーソーの シ」と覚え直す
+async function pairHint(q){
+  const stage = $('#stage'); stage.innerHTML = '';
+  stage.append(putPic(el('div', 'pic'), q.word));
+  const row = wordRow(q.word, 'introword sm'); stage.append(row);
+  [...row.children].forEach(s => { if(s.textContent === q.ch) s.classList.add('lit'); });
+  await speak(`${q.word.w} の ${say(q.ch)} だよ`);
 }
 async function ask(q){
   curQ = q;
@@ -491,7 +652,8 @@ async function ask(q){
   btns[i].classList.add('bad'); sfxTry();
   correctIdx(q).forEach(k => btns[k].classList.add('hint'));
   await speak('おしい！ こたえは これ だよ');
-  await speak(q.lv === 2 ? toHira(q.ch) : q.word.w);
+  await speak(q.tiles ? say(q.ch) : q.word.w);
+  if(q.kind === 'pair') await pairHint(q);
   await sleep(700);
   if(q.choices) q.choices = shuffle(q.choices);
   if(q.tiles) q.tiles = shuffle(q.tiles);
@@ -505,18 +667,29 @@ async function ask(q){
   }
   return false;   // 記録は「1回目で正解できたか」
 }
+async function makiBanner(k){
+  const stage = $('#stage'), ans = $('#answers');
+  stage.innerHTML = ''; ans.innerHTML = ''; ans.className = 'answers';
+  $('#replay').style.visibility = 'hidden';
+  const b = el('div', 'makibanner'); b.append(el('small', '', 'あたらしい まきもの'), MAKI_K[k] + '「' + MAKI_THEME[k].replace(' ', '') + '」');
+  stage.append(b); sfxRank();
+  await speak(`あたらしい まきもの！ ${MAKI[k]}、 ${MAKI_THEME[k]}！`);
+  await sleep(900);
+}
 async function intro(word){
   curQ = null;
   const stage = $('#stage'), ans = $('#answers');
   stage.innerHTML = ''; ans.innerHTML = ''; ans.className = 'answers';
   $('#replay').style.visibility = 'hidden';
-  stage.append(el('div', 'pic', word.e));
-  const row = el('div', 'introword'); [...word.w].forEach(c => row.append(el('span', '', c))); stage.append(row);
+  let row;
+  if(word.charOnly){ row = el('div', 'introword'); row.append(el('span', 'bigchar', word.w)); stage.append(row); }
+  else { stage.append(putPic(el('div', 'pic'), word)); row = wordRow(word, 'introword'); stage.append(row); }
   await sleep(400);
-  await speak('あたらしい ことば だよ！'); await speak(word.w);
+  if(word.charOnly){ await speak('さいごの じ だよ！'); }
+  else { await speak('あたらしい ことば だよ！'); await speak(word.w); }
   const play = async () => {
-    for(const s of row.children){ s.classList.add('lit'); await speak(toHira(s.textContent)); s.classList.remove('lit'); }
-    await speak(word.w);
+    for(const s of row.children){ s.classList.add('lit'); await speak(say(s.textContent)); s.classList.remove('lit'); }
+    if(!word.charOnly) await speak(word.w);
   };
   await play();
   const next = el('button', 'big blue continue', 'わかった！');
@@ -543,9 +716,11 @@ async function runSession(){
   const t = today();
   if(S.extraPlay === t) S.extraPlay = null;
   evaluateAll(null);                                   // 途中でやめた日の分を締める
+  const rankBefore = rankIdx();
   const sess = {date:t, start:Date.now(), asked:0, ok:0, cnt:{}, tcnt:{}, lastTarget:null, lastWord:null, newWord:null};
   const [doNew] = newWordReason();
   const nw = doNew ? nextWord() : null;
+  const newMaki = nw && !nw.charOnly && !S.words.some(x => wordOf(x) && wordOf(x).k === nw.k);
   const reviewN = S.words.length ? Math.min(12, 2 + 2*S.words.length) : 0;
   const newN = nw ? (reviewN ? 3 : 5) : 0;
   initDots(reviewN + newN); if($('#dots').children[0]) $('#dots').children[0].classList.add('now');
@@ -553,7 +728,7 @@ async function runSession(){
 
   const runQ = async q => {
     const ok = await ask(q);
-    record(q.credit, q.lv, ok);
+    record(q, ok);
     uniq(q.word.w).forEach(c => sess.cnt[c] = (sess.cnt[c]||0) + 1);
     sess.tcnt[q.ch] = (sess.tcnt[q.ch]||0) + 1; sess.lastTarget = q.ch; S.chars[q.ch].lastT = t;
     sess.lastWord = q.word.w;
@@ -564,8 +739,9 @@ async function runSession(){
 
   // ① 復習（得意な字から）
   for(let k=0;k<reviewN;k++){ const ch = pickReviewTarget(sess); if(!ch) break; await runQ(makeQ(ch, sess)); }
-  // ② 新しいことば（1日1語＝新しい字は最大3字）
+  // ② 新しいことば（1日1語＝新しい字は最大3字）。巻の最初の語なら巻のはじまりを見せる
   if(nw){
+    if(newMaki) await makiBanner(nw.k);
     introduceWord(nw); sess.newWord = nw.w;
     await intro(nw);
     for(let k=0;k<newN;k++) await runQ(makeQ(pickNewTarget(nw, sess), sess, nw));
@@ -577,15 +753,15 @@ async function runSession(){
   if(!S.playDays.includes(t)) S.playDays.push(t);
   save();
   running = false;
-  await reward(ups);
+  await reward(ups, rankBefore);
 }
 
-async function reward(ups){
+async function reward(ups, rankBefore){
   show('reward');
   const n = S.playDays.length;
   const h = $('#hanko'); h.classList.remove('stamped'); void h.offsetWidth;
   $('#hankoDay').textContent = n + 'にちめ';
-  $('#rwText').textContent = ''; $('#rwUps').innerHTML = ''; $('#rwDone').hidden = true;
+  $('#rwText').textContent = ''; $('#rwUps').innerHTML = ''; $('#rwProg').textContent = ''; $('#rwRank').innerHTML = ''; $('#rwDone').hidden = true;
   await sleep(400);
   h.classList.add('stamped'); setTimeout(sfxStamp, 380);
   await sleep(700);
@@ -594,31 +770,68 @@ async function reward(ups){
   if(ups.length){
     ups.forEach((u,i) => {
       const d = el('div', 'up'); d.style.animationDelay = (i*.15)+'s';
-      d.append(el('b', '', u.ch), el('small', '', u.lv > MAX_LV ? '🏅 よめた！' : '★'.repeat(u.lv) + ' レベルアップ'));
+      const lab = u.from === LV_READ ? '🏅 よめた！' : u.from === LV_PAIR ? '⭐ みきわけた！' : '★'.repeat(u.lv) + ' レベルアップ';
+      d.append(el('b', '', u.ch), el('small', '', lab));
       $('#rwUps').append(d);
     });
     sfxGood();
-    await speak(ups.map(u => toHira(u.ch)).join('、 ') + ' が レベルアップ！');
+    await speak(ups.map(u => say(u.ch)).join('、 ') + ' が レベルアップ！');
+  }
+  const rc = readCount();
+  $('#rwProg').textContent = `📜 よめた じ　${rc} / 46`;
+  const rk = rankIdx(rc);
+  if(rk > rankBefore){
+    const box = el('div', 'rankup'), rn = el('div', 'rn'); rn.innerHTML = ninjaSVG(rk, false);
+    box.append(rn, el('b', '', `ランクアップ！ ${RANKS[rk].kanji}`));
+    $('#rwRank').append(box); sfxRank();
+    await speak(`ランク アップ！ ${RANKS[rk].label} に なったよ！`);
   }
   $('#rwDone').hidden = false;
 }
 
 // =========================================================
-// ホーム
+// ホーム と 巻物
 // =========================================================
 function canPlayToday(){ const t = today(); return !S.playDays.includes(t) || S.extraPlay === t; }
 function renderHome(){
   homeDay = today();
   const st = $('#homeStamps'); st.innerHTML = '';
   S.playDays.slice(-30).forEach(() => st.append(el('div', 'mini-hanko', '忍')));
-  const ok = canPlayToday();
+  const ok = canPlayToday(), rk = rankIdx();
   $('#startBtn').hidden = !ok; $('#doneMsg').hidden = ok; $('#refreshBtn').hidden = ok;
-  $('#homeNinja').textContent = ok ? '🥷' : '😴';
+  $('#homeNinja').innerHTML = ninjaSVG(rk, !ok);
   $('#homeNinja').classList.toggle('sleep', !ok);
+  $('#rankLine').textContent = `${RANKS[rk].kanji}　・　よめた じ ${readCount()} / 46`;
   show('home');
+}
+function renderScroll(){
+  const rk = rankIdx(), g = $('#grid'); g.innerHTML = '';
+  $('#scNinja').innerHTML = ninjaSVG(rk, false);
+  const next = RANKS[rk+1];
+  $('#scSub').textContent = `${RANKS[rk].kanji}　よめた じ ${readCount()}/46` + (next ? `　（あと ${next.min - readCount()}じ で ${next.kanji}）` : '');
+  COLS.forEach(col => col.forEach(c => {
+    const d = el('button', 'cell', c || '・');
+    if(!c){ d.classList.add('empty'); g.append(d); return; }
+    const r = S.chars[c];
+    if(r){
+      if(r.lv >= LV_PAIR) d.classList.add('read');
+      else { d.classList.add('learn'); d.append(el('span', 'lvdots', '●'.repeat(r.lv))); }
+      if(r.lv >= DONE && groupOf(c)) d.append(el('span', 'star', '⭐'));
+    } else d.textContent = c;
+    d.onclick = () => {
+      unlockAudio(); sfxPop();
+      if(!r){ speak('まだ ひみつの じ だよ'); return; }
+      const w = hintWord(c);
+      speak(w && !w.charOnly ? `${say(c)}。 ${w.w} の ${say(c)}` : say(c));
+    };
+    g.append(d);
+  }));
+  show('scrollScr');
 }
 $('#startBtn').onclick = () => { unlockSpeech(); unlockAudio(); sfxPop(); runSession(); };
 $('#homeNinja').onclick = () => { unlockAudio(); sfxPop(); speak(canPlayToday() ? 'にんにん！ しゅぎょう しよう！' : 'また あした ね！'); };
+$('#scrollBtn').onclick = () => { unlockSpeech(); unlockAudio(); sfxPop(); renderScroll(); };
+$('#scBack').onclick = () => { stopSpeech(); renderHome(); };
 $('#rwDone').onclick = () => { stopSpeech(); renderHome(); };
 $('#replay').onclick = replayHandler;
 
@@ -627,7 +840,6 @@ $('#replay').onclick = replayHandler;
 // =========================================================
 (() => {
   // 長押し1秒、または素早く5回タップで開く（どちらの後も計算ゲートあり）
-  // iOS では長押し中に pointercancel / わずかな指のずれが起きやすいので、touch と mouse を直接扱い、15px までのずれは許す
   const c = $('#pcorner'); let tm = null, sx = 0, sy = 0, taps = [];
   const cancel = () => { clearTimeout(tm); tm = null; c.classList.remove('hold'); };
   const begin = (x, y) => { cancel(); sx = x; sy = y; void c.offsetWidth; c.classList.add('hold'); tm = setTimeout(() => { cancel(); taps = []; openGate(); }, 1000); };
@@ -671,55 +883,70 @@ function openGate(){
 
 function openParent(){ renderParent(); show('parent'); $('#parent').scrollTop = 0; }
 function pct(c, t){ return t ? Math.round(c/t*100) + '%' : '—'; }
+function charMaki(ch){ const w = WORDS.find(x => x.w.includes(ch)); return w ? w.k : ''; }
 function renderParent(){
   const t = today(), w = $('#pwrap');
-  const allChars = uniq(WORDS.map(x => x.w).join(''));
+  const order = COLS.flat().filter(Boolean);
   const [nNew, why] = newWordReason();
   const tot = S.sessions.reduce((a,s) => ({n:a.n+s.n, ok:a.ok+s.ok}), {n:0, ok:0});
   const voiceOpts = ['<option value="">自動（Kyoko等）</option>'].concat(jaVoices.map(v => `<option ${v.name===S.settings.voice?'selected':''}>${v.name}</option>`)).join('');
   const sel = (id, vals, cur, lab) => `<select id="${id}">${vals.map((v,i) => `<option value="${v}" ${String(v)===String(cur)?'selected':''}>${lab[i]}</option>`).join('')}</select>`;
+  const rk = rankIdx(), rc = readCount();
 
-  const charRows = allChars.map(ch => {
-    const r = S.chars[ch];
-    if(!r) return `<tr><td class="k" style="color:#bbb">${ch}</td><td><span class="pill l0">未導入</span></td><td>—</td><td>—</td><td>—</td></tr>`;
-    const lv = Math.min(r.lv, 4);
+  const charRows = order.map(ch => {
+    const r = S.chars[ch], mk = charMaki(ch);
+    if(!r) return `<tr><td class="k" style="color:#bbb">${ch}</td><td>${mk}</td><td><span class="pill l0">未導入</span></td><td>—</td><td>—</td><td>—</td></tr>`;
+    const waiting = r.lv === LV_PAIR && !partners(ch).length;
+    const pill = waiting ? `<span class="pill lw">Lv4待ち</span>` : `<span class="pill l${r.lv}">${LV_NAME[r.lv]}</span>`;
     const td = r.day && r.day.date === t ? `${r.day.c}/${r.day.t}` : '—';
-    const pass = r.lv > MAX_LV ? `次の復習 ${r.due ? r.due.slice(5) : '—'}` : `${r.pass}/${S.settings.passDays}日`;
-    return `<tr><td class="k">${ch}</td><td><span class="pill l${lv}">${LV_NAME[lv]}</span></td><td>${pass}</td><td>${td}</td><td>${pct(r.total.c, r.total.t)}（${r.total.t}問）</td></tr>`;
+    const pass = mode(ch) === 'review'
+      ? (waiting ? `相手（${groupOf(ch).filter(x => x !== ch).join('・')}）待ち／復習 ${r.due ? r.due.slice(5) : '—'}` : `次の復習 ${r.due ? r.due.slice(5) : '—'}`)
+      : `${r.pass}/${S.settings.passDays}日`;
+    return `<tr><td class="k">${ch}</td><td>${mk}</td><td>${pill}</td><td>${pass}</td><td>${td}</td><td>${pct(r.total.c, r.total.t)}（${r.total.t}問）</td></tr>`;
   }).join('');
   const sessRows = S.sessions.slice(-10).reverse().map(s =>
     `<tr><td>${s.date.slice(5)}</td><td>${s.n}</td><td>${pct(s.ok, s.n)}</td><td>${Math.floor(s.sec/60)}分${s.sec%60}秒</td><td>${s.newWord||'—'}</td></tr>`).join('')
     || '<tr><td colspan="5" style="color:#999">まだ記録がありません</td></tr>';
+  const nwd = nextWord();
 
   w.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <h2>保護者メニュー</h2><button class="pbtn" id="pClose">閉じる</button>
+      <h2>保護者メニュー <small style="font-size:12px;color:#999">${VERSION}</small></h2><button class="pbtn" id="pClose">閉じる</button>
     </div>
     <div class="meta">今日：${t}${S.settings.dayOffset ? `（テスト用に ${S.settings.dayOffset > 0 ? '+' : ''}${S.settings.dayOffset}日ずらし中）` : ''} ／ 合計 ${S.playDays.length}日 ／ 1回目正答率 ${pct(tot.ok, tot.n)}</div>
 
+    <h3>いまの到達点</h3>
+    <div class="row"><span>ランク</span><b>${RANKS[rk].kanji}${RANKS[rk+1] ? `（あと${RANKS[rk+1].min - rc}字で${RANKS[rk+1].kanji}）` : ''}</b></div>
+    <div class="row"><span>読めた字（Lv3通過）</span><b>${rc} / 46</b></div>
+    <div class="row"><span>Lv1〜3で練習中の字</span><b>${learningCount()}字（上限 ${S.settings.maxLearn >= 99 ? 'なし' : S.settings.maxLearn + '字'}）</b></div>
+    <p class="note">ランク：見習い → 下忍（10字）→ 中忍（25字）→ 上忍（46字すべて）。ランクで忍者の服の色が変わります。</p>
+
     <h3>次回の修行</h3>
-    <div class="row"><span>導入済みのことば</span><b>${S.words.length}/${WORDS.length}　${S.words.join('・') || '—'}</b></div>
-    <div class="row"><span>新しいことば</span><b>${nNew ? 'あり：' + nextWord().w : 'なし'}</b></div>
+    <div class="row"><span>導入済みのことば</span><b>${S.words.length}/${WORDS.length}</b></div>
+    <div class="row"><span>新しいことば</span><b>${nNew ? 'あり：' + nwd.w + '（' + MAKI_K[nwd.k] + '）' : 'なし' + (nwd ? '（次は ' + nwd.w + '）' : '')}</b></div>
     <p class="note">理由：${why}</p>
 
-    <h3>字ごとの進み具合（一の巻 13字）</h3>
-    <table><tr><th>字</th><th>いまのレベル</th><th>進級まで</th><th>今日</th><th>通算</th></tr>${charRows}</table>
-    <p class="note">進級条件：その日の出題が${MIN_TRIES}問以上・正答率${PASS_RATE*100}%以上の日が、設定の日数たまったら次のレベルへ。「よめた」字は間隔をあけて（1→2→4→8日…）復習に出ます。</p>
+    <h3>字ごとの進み具合（清音46字＋ー）</h3>
+    <table><tr><th>字</th><th>巻</th><th>いまのレベル</th><th>進級まで</th><th>今日</th><th>通算</th></tr>${charRows}</table>
+    <p class="note">進級条件：その日の出題が${MIN_TRIES}問以上・正答率${PASS_RATE*100}%以上（Lv4は${PASS_RATE_PAIR*100}%以上）の日が、設定の日数たまったら次のレベルへ。<br>
+    Lv4 にてるもじ（${GROUPS.map(g => g.join('/')).join('、')}）は、組の2字がどちらもLv3を通過してから出ます。相手の字がまだのあいだは「Lv4待ち」として、間隔をあけた復習だけ行います。<br>
+    「よめた」字は1→2→4→8日…と間隔をあけて復習に出ます。</p>
 
     <h3>最近の記録</h3>
     <table><tr><th>日付</th><th>問題数</th><th>1回目正答</th><th>時間</th><th>新しいことば</th></tr>${sessRows}</table>
 
     <h3>設定</h3>
-    <div class="row"><span>進級に必要な合格日数</span>${sel('sPass', [1,2,3], S.settings.passDays, ['1日（速い）','2日（v0.1推奨）','3日（企画書どおり）'])}</div>
+    <div class="row"><span>進級に必要な合格日数</span>${sel('sPass', [1,2,3], S.settings.passDays, ['1日（速い）','2日（推奨）','3日（企画書どおり）'])}</div>
+    <div class="row"><span>練習中の字の上限（超えたら新しいことばを止める）</span>${sel('sMax', [6,9,12,99], S.settings.maxLearn, ['6字（ゆっくり）','9字（推奨）','12字（速い）','制限なし'])}</div>
     <div class="row"><span>読み上げの速さ</span>${sel('sRate', [0.7,0.8,0.9,1.0], S.settings.rate, ['ゆっくり','ややゆっくり','ふつう','はやめ'])}</div>
     <div class="row"><span>声</span><select id="sVoice">${voiceOpts}</select></div>
     <div class="row"><span>新しいことばを毎日自動で出す</span>${sel('sAuto', ['1','0'], S.settings.autoNew ? '1' : '0', ['オン','オフ'])}</div>
-    <div class="row"><span>声のテスト</span><button class="pbtn sub" id="pSay">「トマト」</button></div>
+    <div class="row"><span>声のテスト</span><button class="pbtn sub" id="pSay">「シーソー」</button></div>
 
     <h3>操作</h3>
     <div class="btns">
       <button class="pbtn" id="pAgain">${S.extraPlay === t ? '今日もう1回：許可済み' : '今日もう1回あそばせる'}</button>
-      <button class="pbtn" id="pNew" ${nextWord() ? '' : 'disabled'}>${S.forceNew ? '次回 新しいことば：指定済み' : '次回 必ず新しいことばを出す'}</button>
+      <button class="pbtn" id="pNew" ${nwd ? '' : 'disabled'}>${S.forceNew ? '次回 新しいことば：指定済み' : '次回 必ず新しいことばを出す'}</button>
       <button class="pbtn sub" id="pCopy">記録をコピー（JSON）</button>
     </div>
     <textarea id="pJson" hidden readonly></textarea>
@@ -734,10 +961,11 @@ function renderParent(){
   `;
   $('#pClose').onclick = () => renderHome();
   $('#sPass').onchange = e => { S.settings.passDays = Number(e.target.value); save(); renderParent(); };
+  $('#sMax').onchange = e => { S.settings.maxLearn = Number(e.target.value); save(); renderParent(); };
   $('#sRate').onchange = e => { S.settings.rate = Number(e.target.value); save(); };
   $('#sVoice').onchange = e => { S.settings.voice = e.target.value; save(); };
   $('#sAuto').onchange = e => { S.settings.autoNew = e.target.value === '1'; save(); renderParent(); };
-  $('#pSay').onclick = () => { unlockSpeech(); speak('トマト。 トマトは どれかな？'); };
+  $('#pSay').onclick = () => { unlockSpeech(); speak('シーソー。 し は どっち？'); };
   $('#pAgain').onclick = () => { S.extraPlay = t; save(); renderParent(); };
   $('#pNew').onclick = () => { S.forceNew = !S.forceNew; save(); renderParent(); };
   $('#pCopy').onclick = async () => {
@@ -786,6 +1014,13 @@ $('#refreshBtn').onclick = () => {                  // 手動で更新するボ�
     const l = document.createElement('link'); l.rel = 'apple-touch-icon'; l.href = c.toDataURL('image/png'); document.head.append(l);
   }catch(e){}
 })();
+
+// ---- 自動テスト用の窓口（?test=1 のときだけ）
+if(TEST) window.__kn = {
+  get S(){ return S; }, get q(){ return curQ; }, waiting: () => !!tapResolver, choose: i => onChoice(i),
+  correct: () => correctIdx(curQ)[0], nTiles: () => $('#answers').children.length,
+  nextDay: () => { S.settings.dayOffset++; save(); renderHome(); }, mode, readCount, rankIdx, learningCount,
+};
 
 evaluateAll(null); save();
 renderHome();
