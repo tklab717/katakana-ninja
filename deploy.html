@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub デプロイツール</title>
+<style>
+  :root{--bg:#0f172a;--card:#1e293b;--card2:#283548;--line:#334155;--text:#e2e8f0;--muted:#94a3b8;--accent:#38bdf8;--green:#22c55e;--red:#f87171;--warn:#fbbf24;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding:20px;}
+  .wrap{max-width:600px;margin:0 auto;}
+  h1{font-size:20px;text-align:center;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;}
+  label{display:block;font-size:13px;color:var(--muted);margin:10px 0 6px;}
+  input,input[type=file]{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:11px;font-size:15px;outline:none;}
+  input:focus{border-color:var(--accent);}
+  .row{display:flex;gap:10px;}
+  .row>div{flex:1;}
+  .btn{width:100%;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;color:#04141f;background:var(--green);margin-top:8px;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .btn.sm{width:auto;padding:8px 14px;font-size:13px;background:var(--card2);color:var(--text);border:1px solid var(--line);}
+  .note{background:var(--card2);border-left:3px solid var(--warn);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--muted);margin-top:10px;}
+  .note b{color:var(--text);}
+  a{color:var(--accent);}
+  #log{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:#0b1220;border:1px solid var(--line);border-radius:10px;padding:12px;min-height:60px;white-space:pre-wrap;word-break:break-all;}
+  .ok{color:var(--green);} .err{color:var(--red);} .info{color:var(--muted);}
+  details{margin-top:10px;font-size:13px;}
+  summary{cursor:pointer;color:var(--accent);}
+  details ol{padding-left:18px;color:var(--muted);}
+  .filehint{font-size:12px;color:var(--muted);margin-top:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🚀 GitHub デプロイツール</h1>
+  <p class="info" style="text-align:center;font-size:13px;color:var(--muted)">更新した index.html を選んでボタンを押すと、GitHub に反映されます。</p>
+
+  <div class="card">
+    <div class="row">
+      <div><label>GitHubユーザー名（owner）</label><input id="owner" placeholder="例: tom123"></div>
+      <div><label>リポジトリ名</label><input id="repo" placeholder="例: training-log"></div>
+    </div>
+    <div class="row">
+      <div><label>ブランチ</label><input id="branch" value="main"></div>
+      <div><label>反映先ファイルパス</label><input id="path" value="index.html"></div>
+    </div>
+
+    <label>アクセストークン（fine-grained PAT）</label>
+    <input id="token" type="password" placeholder="github_pat_... または ghp_...">
+    <div class="filehint">この端末のブラウザ内にだけ保存され、外部に送るのは GitHub への通信のみです。</div>
+
+    <label>アップロードする index.html を選択</label>
+    <input id="file" type="file" accept=".html,text/html">
+    <div class="filehint" id="fileinfo">未選択</div>
+
+    <button class="btn" id="push">GitHub に反映する（Push）</button>
+    <button class="btn sm" id="clearTok" style="margin-top:10px">保存したトークンを消去</button>
+
+    <div class="note">
+      <b>安全のために：</b> トークンは「<b>Fine-grained personal access token</b>」を作り、
+      対象リポジトリを1つだけ、権限を <b>Contents: Read and write</b> のみに絞ってください。
+      <details>
+        <summary>トークンの作り方（クリックで展開）</summary>
+        <ol>
+          <li>GitHub → 右上アイコン → Settings → 一番下の <b>Developer settings</b></li>
+          <li><b>Personal access tokens</b> → <b>Fine-grained tokens</b> → <b>Generate new token</b></li>
+          <li>Repository access: <b>Only select repositories</b> → このアプリのリポジトリを選択</li>
+          <li>Permissions → Repository permissions → <b>Contents</b> を <b>Read and write</b> に</li>
+          <li>Generate して表示された <code>github_pat_...</code> をコピーし、上の欄に貼る</li>
+        </ol>
+      </details>
+    </div>
+  </div>
+
+  <div class="card">
+    <label>ログ</label>
+    <div id="log"><span class="info">待機中...</span></div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const FIELDS=['owner','repo','branch','path','token'];
+// 復元
+FIELDS.forEach(f=>{const v=localStorage.getItem('deploy.'+f);if(v!==null)$(f).value=v;});
+// 保存
+FIELDS.forEach(f=>$(f).addEventListener('input',()=>localStorage.setItem('deploy.'+f,$(f).value)));
+
+let fileText=null;
+$('file').addEventListener('change',e=>{
+  const f=e.target.files[0];
+  if(!f){fileText=null;$('fileinfo').textContent='未選択';return;}
+  const fr=new FileReader();
+  fr.onload=()=>{fileText=fr.result;$('fileinfo').innerHTML='<span class="ok">選択済み: '+f.name+'（'+fr.result.length+' 文字）</span>';};
+  fr.readAsText(f);
+});
+
+$('clearTok').onclick=()=>{localStorage.removeItem('deploy.token');$('token').value='';log('トークンを消去しました','info');};
+
+function log(msg,cls='info'){$('log').innerHTML+='\n<span class="'+cls+'">'+msg+'</span>';$('log').scrollTop=$('log').scrollHeight;}
+function reset(){$('log').innerHTML='<span class="info">開始...</span>';}
+
+// UTF-8 安全な base64
+function toB64(str){
+  const bytes=new TextEncoder().encode(str);
+  let bin='';bytes.forEach(b=>bin+=String.fromCharCode(b));
+  return btoa(bin);
+}
+
+async function gh(url,opts,token){
+  const r=await fetch(url,{...opts,headers:{
+    'Authorization':'Bearer '+token,
+    'Accept':'application/vnd.github+json',
+    'X-GitHub-Api-Version':'2022-11-28',
+    ...(opts&&opts.headers||{})
+  }});
+  return r;
+}
+
+$('push').onclick=async()=>{
+  reset();
+  const owner=$('owner').value.trim(),repo=$('repo').value.trim(),
+        branch=$('branch').value.trim()||'main',path=$('path').value.trim()||'index.html',
+        token=$('token').value.trim();
+  if(!owner||!repo){log('ユーザー名とリポジトリ名を入力してください','err');return;}
+  if(!token){log('アクセストークンを入力してください','err');return;}
+  if(fileText===null){log('アップロードする index.html を選択してください','err');return;}
+
+  const apiBase=`https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+  $('push').disabled=true;
+  try{
+    // 既存ファイルの sha を取得（無ければ新規）
+    log('既存ファイルを確認中...');
+    let sha=null;
+    const getR=await gh(`${apiBase}?ref=${encodeURIComponent(branch)}`,{},token);
+    if(getR.status===200){const j=await getR.json();sha=j.sha;log('既存ファイルを検出（更新します）','info');}
+    else if(getR.status===404){log('新規ファイルとして作成します','info');}
+    else if(getR.status===401){log('認証エラー：トークンが無効か期限切れです','err');throw 0;}
+    else if(getR.status===403){log('権限エラー：トークンの権限（Contents: Read and write）を確認してください','err');throw 0;}
+    else{log('予期しない応答: '+getR.status,'err');throw 0;}
+
+    // PUT で反映
+    log('GitHub に送信中...');
+    const body={
+      message:`update ${path} via deploy tool (${new Date().toISOString()})`,
+      content:toB64(fileText),
+      branch:branch
+    };
+    if(sha)body.sha=sha;
+    const putR=await gh(apiBase,{method:'PUT',body:JSON.stringify(body)},token);
+    if(putR.status===200||putR.status===201){
+      const j=await putR.json();
+      log('✅ 反映に成功しました！','ok');
+      log('コミット: '+j.commit.sha.slice(0,7),'info');
+      log('数分後に Pages に反映されます → https://'+owner+'.github.io/'+repo+'/','ok');
+    }else{
+      const t=await putR.text();
+      log('❌ 失敗 ('+putR.status+'): '+t.slice(0,300),'err');
+    }
+  }catch(e){
+    if(e!==0)log('通信エラー: '+e,'err');
+  }finally{
+    $('push').disabled=false;
+  }
+};
+</script>
+</body>
+</html>
